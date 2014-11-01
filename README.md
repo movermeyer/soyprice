@@ -1,4 +1,4 @@
 soyprice
 ========
 
-A service to show the soy price on a twetter account.
+A service to show the soy price on a twetter timeline.
