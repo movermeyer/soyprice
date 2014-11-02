@@ -53,7 +53,7 @@ try:
     date_list = [base - datetime.timedelta(days=x) for x in range(0, numdays)]
     price = forecast(date_list)
     day = (get_next_workable_day(date_list[0])).strftime('%d-%m-%Y')
-    tweet('Forecast Soja con descarga para (%s): $%.f' % (
-        day, price))
+    tweet('Forecast Soja con descarga para el %s: $%.f' %
+          (day, price))
 except TwythonError as e:
     print e
