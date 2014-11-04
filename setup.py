@@ -3,8 +3,11 @@
 from setuptools import setup, find_packages
 import os
 import subprocess
-from pip.req import parse_requirements
 from setuptools.command import easy_install
+
+def parse_requirements(filename):
+    return list(filter(lambda line: (line.trim())[0] == '#',
+                       [line.strip() for line in open(filename).readlines()]))
 
 
 def calculate_version():
