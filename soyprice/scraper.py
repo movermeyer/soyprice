@@ -22,7 +22,7 @@ def get_price(row):
     text = lambda x: fix_string(x.encode('utf-8').decode('ascii', 'ignore'))
     fix_float = lambda x: re.sub('\,', '.', re.sub('\.\.', '.', x))
     cast = lambda x: float(fix_float(x)) if len(x) > 0 and x[0].isdigit() else text(x)
-    numdays = 10
+    numdays = 20
     texts = lambda row, tag: [cast(c.text) for c in row.select(tag)]
     return texts(row, 'th') + texts(row,'td')
 
@@ -44,14 +44,10 @@ def get_prices(datetime, places=[]):
     return datetime.date(), prices
 
 def get_dataset(date_list=[], places=[]):
-    print date_list
     adapt = lambda p: (int(p['datetime'].toordinal()), p['price'])
     prices = map(lambda (dt, prices): map(adapt, prices),
                  map(get_prices, date_list))
-    prices = filter(lambda p: len(p[1]) > 0, prices)
-    print prices
+    prices = filter(lambda day: len(day) > 0, prices)
     params = list(chain(*prices))
-    print params
-    x = zip(*params)
-    y = zip(*params)
+    x, y = zip(*params)
     return x, y
