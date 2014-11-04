@@ -6,7 +6,7 @@ import subprocess
 from setuptools.command import easy_install
 
 def parse_requirements(filename):
-    return list(filter(lambda line: (line.trim())[0] == '#',
+    return list(filter(lambda line: (line.strip())[0] == '#',
                        [line.strip() for line in open(filename).readlines()]))
 
 
