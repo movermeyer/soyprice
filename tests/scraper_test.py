@@ -26,11 +26,22 @@ class TestScraper(unittest.TestCase):
                  'port': u'daireaux',
                  'datetime': datetime.date(2014, 10, 8)}
             ])
+        self.days = [datetime.datetime(2014, 10, 8) - datetime.timedelta(days=x)
+                     for x in range(0, 15)]
+
+    def test_get_days(self):
+        days = scraper.get_days(datetime.datetime(2014, 10, 8))
+        self.assertEquals(days, self.days)
+
+    def test_get_next_workable_day(self):
+        day = scraper.get_next_workable_day(self.day)
+        self.assertEquals(day, datetime.datetime(2014, 10, 9))
+        day = scraper.get_next_workable_day(datetime.datetime(2014, 10, 10))
+        self.assertEquals(day, datetime.datetime(2014, 10, 13))
 
     def test_get_prices(self):
         prices = scraper.get_prices(self.day)
         self.assertEquals(prices, self.prices)
-
 
     def test_get_prices_san_martin_and_blanca(self):
         prices = scraper.get_prices(self.day, places=['san', 'blan'])
@@ -38,6 +49,10 @@ class TestScraper(unittest.TestCase):
         prices_tmp = list(self.prices)
         prices_tmp[1] = filter(only_san_and_blanca, prices_tmp[1])
         self.assertEquals(prices, tuple(prices_tmp))
+
+    def test_get_dataset(self):
+        # prices = scraper.get_dataset(self.day)
+        pass  # print prices
 
 
 if __name__ == '__main__':

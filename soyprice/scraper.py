@@ -1,6 +1,20 @@
+import datetime
 import requests
 from bs4 import BeautifulSoup as beautifulsoup
+from itertools import chain
 import re
+
+
+def get_days(base, defined_range=range(0,15)):
+    return [base - datetime.timedelta(days=x) for x in defined_range]
+
+
+def get_next_workable_day(date):
+    calculate = lambda d: d + datetime.timedelta(days=1)
+    day = calculate(date)
+    while day.weekday() > 4:
+        day = calculate(day)
+    return day
 
 
 def get_price(row):
@@ -20,10 +34,24 @@ def get_prices(datetime, places=[]):
     page = beautifulsoup(requests.get(url).text)
     rows = page.select('tr')
     prices = [get_price(r) for r in rows]
-    soy_with_download = lambda x: 'soja' in x[0] and 'con descarga' in x[4] and x[2] > 0
+    soy_with_download = lambda x: ('soja' in x[0] and 'con descarga' in x[4]
+                                   and x[2] > 0)
     present = lambda x: {'datetime': datetime.date(), 'price': x[2], 'port':x[1]}
     prices = map(present, filter(soy_with_download, prices))
     if places:
         soy_in_places = lambda p: any([place in p['port'] for place in places])
         prices = filter(soy_in_places, prices)
     return datetime.date(), prices
+
+def get_dataset(date_list=[], places=[]):
+    print date_list
+    adapt = lambda p: (p['datetime'].date().toordinal(), p['price'])
+    prices = map(lambda (dt, prices): [adaot_x(p) for p in prices],
+                 map(get_prices, date_list))
+    prices = filter(lambda p: len(p[1]) > 0, prices)
+    print prices
+    params = list(chain(*prices))
+    print params
+    x = zip(*params)
+    y = zip(*params)
+    return x, y

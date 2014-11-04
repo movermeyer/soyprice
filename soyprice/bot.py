@@ -3,9 +3,8 @@
 
 from twython import Twython, TwythonError
 import datetime
-from numpy import polyfit, poly1d
-from itertools import chain
-from scraper import get_prices
+from scraper import get_dataset, get_days, get_next_workable_day
+from statistic import forecast
 
 
 APP_KEY = 'rogbcg4oUIEHGh35kxMVGAf2k'
@@ -20,40 +19,14 @@ def tweet(status):
     twitter.update_status(status=status)
 
 
-def obtain(date_list):
-    prices = map(lambda (dt, x): (dt, [p['price'] for p in x]),
-                 map(get_prices, date_list))
-    prices = filter(lambda x: len(x[1]) > 0, prices)
-    params = map(lambda x: x[1], prices)
-    idx = range(len(params),0,-1)
-    x = [[idx[i]] * len(params[i]) for i in range(len(params))]
-    x = list(chain(*x))
-    y = list(chain(*params))
-    return x, y
-
-
-def forecast(date_list):
-    x, y = obtain(date_list)
-    fit = polyfit(x, y, 3)
-    fx = poly1d(fit)
-    return fx(x[0] + 1)
-
-
-def get_next_workable_day(date):
-    calculate = lambda d: d + datetime.timedelta(days=1)
-    day = calculate(date)
-    while day.weekday() > 4:
-        day = calculate(date)
-    return day
-
-
-try:
-    numdays = 17
-    base = datetime.datetime.today()
-    date_list = [base - datetime.timedelta(days=x) for x in range(0, numdays)]
-    price = forecast(date_list)
-    day = (get_next_workable_day(date_list[0])).strftime('%d-%m-%Y')
-    tweet('Forecast Soja con descarga para el %s: $%.f' %
-          (day, price))
-except TwythonError as e:
-    print e
+def step():
+    try:
+        numdays = 17
+        date_list = get_days(datetime.datetime.today())
+        x, y = get_dataset(date_list)
+        price = forecast(x, y)
+        day = (get_next_workable_day(date_list[0])).strftime('%d-%m-%Y')
+        tweet('Forecast Soja con descarga para el %s: AR$%.f' %
+              (day, price))
+    except TwythonError as e:
+        pass
