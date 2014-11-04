@@ -51,7 +51,7 @@ def get_long_description():
 setup(
     name='soyprice',
     version=version_git,
-    author=u'Eloy Adonis Colell',
+    author='Eloy Adonis Colell',
     author_email='eloy.colell@gmail.com',
     packages=find_packages(),
     url='https://github.com/limiear/soyprice',
