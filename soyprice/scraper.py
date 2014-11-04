@@ -46,7 +46,7 @@ def get_prices(datetime, places=[]):
 def get_dataset(date_list=[], places=[]):
     print date_list
     adapt = lambda p: (p['datetime'].date().toordinal(), p['price'])
-    prices = map(lambda (dt, prices): [adaot_x(p) for p in prices],
+    prices = map(lambda (dt, prices): map(adapt, prices),
                  map(get_prices, date_list))
     prices = filter(lambda p: len(p[1]) > 0, prices)
     print prices
