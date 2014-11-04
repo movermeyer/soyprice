@@ -30,3 +30,5 @@ def step():
               (day, price))
     except TwythonError as e:
         pass
+
+step()
