@@ -16,7 +16,8 @@ twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
 def tweet(status):
     # Requires Authentication as of Twitter API v1.1
-    twitter.update_status(status=status)
+    template = "%s [https://github.com/limiear/soyprice]"
+    twitter.update_status(status=template % status)
 
 
 def step():
