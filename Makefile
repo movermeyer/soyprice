@@ -38,6 +38,9 @@ test:
 	$(SOURCE_ACTIVATE) $(PYTHON) tests
 	@ echo "[ tested       ] the system was completly tested"
 
+run:
+	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/bot.py
+
 shell:
 	@ $(SOURCE_ACTIVATE) ipython
 	@ echo "[ shell        ] the system was loaded into an ipython shell"
