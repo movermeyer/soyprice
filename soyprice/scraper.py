@@ -43,10 +43,15 @@ def get_prices(datetime, places=[]):
         prices = filter(soy_in_places, prices)
     return datetime.date(), prices
 
+
+def date_to_int(dt):
+    return int(dt.toordinal())
+
+
 def get_dataset(date_list=[], places=[]):
-    adapt = lambda p: (int(p['datetime'].toordinal()), p['price'])
+    adapt = lambda p: (date_to_int(p['datetime']), p['price'])
     prices = map(lambda (dt, prices): map(adapt, prices),
-                 map(get_prices, date_list))
+                 [get_prices(d, places) for d in date_list])
     prices = filter(lambda day: len(day) > 0, prices)
     params = list(chain(*prices))
     x, y = zip(*params)
