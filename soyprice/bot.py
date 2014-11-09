@@ -69,10 +69,10 @@ def step():
         dollars = get_dollars(date_list)
         price_d, rmse_d, fix_d, fx_d = forecast(*(zip(*dollars) + [next_x]))
 	filename = graph(x, y, fix, next_x, fx(next_x), dollars, fix_d, next_x, price_d)
-        # tweet(('Forecast Soja puerto San Martín con descarga para el'
-        #       ' %s: AR$ %.f (RMSE: AR$ %i)') % 
-        #        (day.strftime('%d-%m-%Y'), price, int(rmse)),
-        #       filename)
+        tweet(('Forecast Soja puerto San Martín con descarga para el'
+               ' %s: AR$ %.f (RMSE: AR$ %i)') % 
+                (day.strftime('%d-%m-%Y'), price, int(rmse)),
+               filename)
     except TwythonError as e:
         pass
 
