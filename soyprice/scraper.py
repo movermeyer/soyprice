@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
 import re
+import json
 
 
 def get_days(base, defined_range=range(0,15)):
@@ -56,3 +57,14 @@ def get_dataset(date_list=[], places=[]):
     params = list(chain(*prices))
     x, y = zip(*params)
     return x, y
+
+
+def get_dollars(date_list=[]):
+    date_tmp = map(lambda d: d.date(), date_list)
+    url = ("http://www.ambito.com/economia/mercados/monedas/dolar/"
+           "x_dolar_get_grafico.asp?ric=ARSB=&tipo=yyyy")
+    dollars = eval(requests.get(url).text)
+    dollars = map(lambda (d, v): (datetime.datetime.strptime(d, "%Y/%m/%d"), v),
+                  dollars)
+    dollars = filter(lambda (d, v): d.date() in date_tmp, dollars)
+    return map(lambda (d, v): [date_to_int(d), v], dollars)
