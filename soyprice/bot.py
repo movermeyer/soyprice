@@ -9,6 +9,7 @@ import pylab as pl
 from PIL import Image
 from StringIO import StringIO
 import numpy as np
+import database as db
 
 
 
@@ -63,11 +64,12 @@ def graph(x, y, fix, next_x, next_y, dollars, fix_d, next_d_x, next_d_y, rmse, w
 
 
 def step():
+    cache = db.open()
     try:
         amount = 30
         date_list = get_days(datetime.datetime.today(), range(0, amount))
 	date_list.reverse()
-        x, y = get_dataset(date_list, places=['san'])
+        x, y = get_dataset(cache, date_list, places=['san'])
         day = get_next_workable_day(date_list[-1])
 	next_x = date_to_int(day)
         price, rmse, fix, fx, weights = forecast(x, y, next_x)
@@ -80,5 +82,6 @@ def step():
                filename)
     except TwythonError as e:
         pass
+    db.close(cache)
 
 step()

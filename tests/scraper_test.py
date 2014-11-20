@@ -1,5 +1,5 @@
 import unittest
-from soyprice import scraper
+from soyprice import database, scraper
 import datetime
 
 
@@ -28,6 +28,10 @@ class TestScraper(unittest.TestCase):
             ])
         self.days = [datetime.datetime(2014, 10, 8) - datetime.timedelta(days=x)
                      for x in range(0, 15)]
+        self.cache = database.open()
+
+    def tearDown(self):
+        database.close(self.cache)
 
     def test_get_days(self):
         days = scraper.get_days(datetime.datetime(2014, 10, 8))
@@ -40,11 +44,11 @@ class TestScraper(unittest.TestCase):
         self.assertEquals(day, datetime.datetime(2014, 10, 13))
 
     def test_get_prices(self):
-        prices = scraper.get_prices(self.day)
+        prices = scraper.get_prices(self.cache, self.day)
         self.assertEquals(prices, self.prices)
 
     def test_get_prices_san_martin_and_blanca(self):
-        prices = scraper.get_prices(self.day, places=['san', 'blan'])
+        prices = scraper.get_prices(self.cache, self.day, places=['san', 'blan'])
         only_san_and_blanca = lambda x: x['port'] in ['san martn', 'b.blanca']
         prices_tmp = list(self.prices)
         prices_tmp[1] = filter(only_san_and_blanca, prices_tmp[1])

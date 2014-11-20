@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
 import re
 import json
+import database as db
 
 
 def get_days(base, defined_range=range(0,15)):
@@ -28,17 +29,23 @@ def get_price(row):
     return texts(row, 'th') + texts(row,'td')
 
 
-def get_prices(datetime, places=[]):
-    date = datetime.strftime('%d-%m-%Y')
-    url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?tk=1414884447433&'
-           'mode=get&fecha=%s&_=' % date)
-    page = beautifulsoup(requests.get(url).text)
-    rows = page.select('tr')
-    prices = [get_price(r) for r in rows]
-    soy_with_download = lambda x: ('soja' in x[0] and 'con descarga' in x[4]
+def get_prices(cache, datetime, places=[]):
+    path = 'soy/afascl'
+    if datetime.date() not in db.get(cache, path).keys():
+        date = datetime.strftime('%d-%m-%Y')
+        url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
+               'tk=1414884447433&mode=get&fecha=%s&_=' % date)
+        page = beautifulsoup(requests.get(url).text)
+        rows = page.select('tr')
+        prices = [get_price(r) for r in rows]
+        soy_with_download = lambda x: ('soja' in x[0] and 'con descarga' in x[4]
                                    and x[2] > 0)
-    present = lambda x: {'datetime': datetime.date(), 'price': x[2], 'port':x[1]}
-    prices = map(present, filter(soy_with_download, prices))
+        present = lambda x: {'datetime': datetime.date(), 'price': x[2], 'port':x[1]}
+        prices = map(present, filter(soy_with_download, prices))
+        db.get(cache, path)[datetime.date()] = prices
+        db.sync(cache)
+    else:
+        prices = db.get(cache, path)[datetime.date()]
     if places:
         soy_in_places = lambda p: any([place in p['port'] for place in places])
         prices = filter(soy_in_places, prices)
@@ -49,10 +56,10 @@ def date_to_int(dt):
     return int(dt.toordinal())
 
 
-def get_dataset(date_list=[], places=[]):
+def get_dataset(cached, date_list=[], places=[]):
     adapt = lambda p: (date_to_int(p['datetime']), p['price'])
     prices = map(lambda (dt, prices): map(adapt, prices),
-                 [get_prices(d, places) for d in date_list])
+                 [get_prices(cached, d, places) for d in date_list])
     prices = filter(lambda day: len(day) > 0, prices)
     params = list(chain(*prices))
     x, y = zip(*params)
