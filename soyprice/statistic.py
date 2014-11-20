@@ -3,7 +3,6 @@ from math import log, e
 
 def forecast(x, y, future_x):
     weights = map(lambda xi: (xi -x[0])/float(x[-1] - x[0]), x)
-    print weights
     fit = polyfit(x, y, 6, w=weights)
     fx = poly1d(fit)
     estimated = map(fx, x)
