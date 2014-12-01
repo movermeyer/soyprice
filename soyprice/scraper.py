@@ -159,6 +159,5 @@ def get_dataset(cache, date_list=[], places=[]):
     prices['chicago'] = get_chicago_price(cache, date_list)
     prices['afascl'] = get_prices(cache, date_list, places)
     params = list(chain(*prices['afascl']))
-    print params
     x, y = zip(*params)
     return x, y
