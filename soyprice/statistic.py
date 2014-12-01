@@ -1,7 +1,15 @@
 from numpy import polyfit, poly1d, sqrt
 from math import log, e
 
+def date_to_int(dt):
+    return int(dt.toordinal())
+
 def forecast(x, y, future_x):
+    data = filter(lambda d: d[1], zip(x, y))
+    if len(data) == 0:
+        return 0., 0., 0., lambda x: x, (1.)
+    x, y = zip(*data)
+    x = map(date_to_int, x)
     weights = map(lambda xi: (xi -x[0])/float(x[-1] - x[0]), x)
     fit = polyfit(x, y, 6, w=weights)
     fx = poly1d(fit)

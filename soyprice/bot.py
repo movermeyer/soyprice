@@ -3,7 +3,7 @@
 
 from twython import Twython, TwythonError
 import datetime
-from scraper import get_dataset, get_days, get_next_workable_day, date_to_int, get_dollars
+from scraper import get_prices, get_days, get_next_workable_day, date_to_int, get_dollars
 from statistic import forecast
 import pylab as pl
 from PIL import Image
@@ -27,6 +27,9 @@ def tweet(status, image):
 
 
 def graph(x, y, fix, next_x, next_y, dollars, fix_d, next_d_x, next_d_y, rmse, weights):
+    data = filter(lambda d: d[1], zip(x, y))
+    x, y = zip(*data)
+    x = map(date_to_int, x)
     border = 2
     ratio = 100
     x_values = list(x) + [next_x]
@@ -69,13 +72,22 @@ def step():
         amount = 30
         date_list = get_days(datetime.datetime.today(), range(0, amount))
 	date_list.reverse()
-        x, y = get_dataset(cache, date_list, places=['san'])
         day = get_next_workable_day(date_list[-1])
 	next_x = date_to_int(day)
-        price, rmse, fix, fx, weights = forecast(x, y, next_x)
-        dollars = get_dollars(date_list)
-        price_d, rmse_d, fix_d, fx_d, weights = forecast(*(zip(*dollars) + [next_x]))
-	filename = graph(x, y, fix, next_x, fx(next_x), dollars, fix_d, next_x, price_d, rmse, weights)
+        # dollars
+        dollars = get_dollars(cache, date_list)
+        params = zip(*dollars) + [next_x]
+        price_d, rmse_d, fix_d, fx_d, weights = forecast(*params)
+        # soy
+        afascl = get_prices(cache, date_list)
+        params = zip(*afascl) + [next_x]
+        price, rmse, fix, fx, weights = forecast(*params)
+        print price_d
+        params = zip(*afascl) + [fix , next_x , fx(next_x), dollars,
+                                 fix_d, next_x, price_d, rmse, weights]
+        filename = graph(*params)
+        price = 0
+        rmse = 0
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
                 (day.strftime('%d-%m-%Y'), price, int(rmse)),
