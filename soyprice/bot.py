@@ -7,7 +7,7 @@ from scraper import get_prices, get_chicago_price, get_days, get_next_workable_d
 from statistic import forecast
 import numpy as np
 import database as db
-from grapher import graph
+from grapher import draw, graph
 
 
 APP_KEY = 'rogbcg4oUIEHGh35kxMVGAf2k'
@@ -30,17 +30,17 @@ def step():
         date_list = get_days(datetime.datetime.today(), range(0, amount))
 	date_list.reverse()
         day = get_next_workable_day(date_list[-1])
-	next_x = date_to_int(day)
         # dollars
         dollars = get_dollars(cache, date_list)
-        price_d, rmse_d, fix_d, fx_d, weights = forecast(dollars, next_x)
+        # price_d, rmse_d, fix_d, fx_d, weights = forecast(dollars, day)
         # soy
         afascl = get_prices(cache, date_list)
         chicago = get_chicago_price(cache, date_list)
-        price, rmse, fix, fx, weights = forecast(afascl, next_x)
-        print price_d
-        filename = graph(afascl, fix , next_x , fx(next_x), dollars,
-                                 fix_d, next_x, price_d, rmse, weights)
+        price, rmse, fix, fx, weights = forecast(afascl, day)
+        # print price_d
+        # filename = graph(afascl, fix , day, fx(date_to_int(day)), dollars,
+        #                         fix_d, day, price_d, rmse, weights)
+        filename = draw([afascl, chicago, dollars], day, 'graph.png')
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
                 (day.strftime('%d-%m-%Y'), price, int(rmse)),
