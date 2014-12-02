@@ -33,13 +33,11 @@ def step():
 	next_x = date_to_int(day)
         # dollars
         dollars = get_dollars(cache, date_list)
-        params = zip(*dollars) + [next_x]
-        price_d, rmse_d, fix_d, fx_d, weights = forecast(*params)
+        price_d, rmse_d, fix_d, fx_d, weights = forecast(dollars, next_x)
         # soy
         afascl = get_prices(cache, date_list)
         chicago = get_chicago_price(cache, date_list)
-        params = zip(*afascl) + [next_x]
-        price, rmse, fix, fx, weights = forecast(*params)
+        price, rmse, fix, fx, weights = forecast(afascl, next_x)
         print price_d
         filename = graph(afascl, fix , next_x , fx(next_x), dollars,
                                  fix_d, next_x, price_d, rmse, weights)

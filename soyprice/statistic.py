@@ -4,8 +4,8 @@ from math import log, e
 def date_to_int(dt):
     return int(dt.toordinal())
 
-def forecast(x, y, future_x):
-    data = filter(lambda d: d[1], zip(x, y))
+def forecast(variable, future_x):
+    data = filter(lambda d: d[1], variable)
     if len(data) == 0:
         return 0., 0., 0., lambda x: x, (1.)
     x, y = zip(*data)
