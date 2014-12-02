@@ -23,8 +23,6 @@ def tweet(status, image):
     twitter.update_status_with_media(media=photo, status=template % status)
 
 
-
-
 def step():
     cache = db.open()
     try:
