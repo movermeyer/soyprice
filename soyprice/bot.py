@@ -43,9 +43,8 @@ def step():
         params = zip(*afascl) + [next_x]
         price, rmse, fix, fx, weights = forecast(*params)
         print price_d
-        params = zip(*afascl) + [fix , next_x , fx(next_x), dollars,
-                                 fix_d, next_x, price_d, rmse, weights]
-        filename = graph(*params)
+        filename = graph(afascl, fix , next_x , fx(next_x), dollars,
+                                 fix_d, next_x, price_d, rmse, weights)
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
                 (day.strftime('%d-%m-%Y'), price, int(rmse)),

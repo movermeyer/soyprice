@@ -2,8 +2,8 @@ from scraper import date_to_int
 import pylab as pl
 
 
-def graph(x, y, fix, next_x, next_y, dollars, fix_d, next_d_x, next_d_y, rmse, weights):
-    data = filter(lambda d: d[1], zip(x, y))
+def graph(variable, fix, next_x, next_y, dollars, fix_d, next_d_x, next_d_y, rmse, weights):
+    data = filter(lambda d: d[1], variable)
     x, y = zip(*data)
     x = map(date_to_int, x)
     border = 2
