@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
 import re
 import json
-import database as db
+from model import Variable
 
 
 def get_days(base, defined_range=range(0,15)):
@@ -21,41 +21,6 @@ def get_next_workable_day(date):
 
 def date_to_int(dt):
     return int(dt.toordinal())
-
-
-class Variable(object):
-
-    def __init__(self, cache):
-        self.cache = cache
-        self.name = 'global'
-
-    @property
-    def today(self):
-        return datetime.datetime.now().date()
-
-    def scrap(self, date_list):
-        pass
-
-    def should_scrap(self, date):
-        serie = db.get(self.cache, self.name)
-        return (date not in serie.keys()
-                or (date == self.today and serie[date] is None))
-
-    def get_element(self, date):
-        # Return a price
-        if isinstance(date, datetime.datetime):
-            date = date.date()
-        if self.should_scrap(date):
-            price = self.scrap([date])
-            price = price[0] if len(price) else price
-            db.get(self.cache, self.name)[date] = price
-            db.sync(self.cache)
-        data = db.get(self.cache, self.name)
-        return data[date] if date in data.keys() else None
-
-    def get(self, date_list=[]):
-        # Return a list of tuples with date and price for each tuple
-        return map(lambda d: (d, self.get_element(d)), date_list)
 
 
 class BlueDollar(Variable):
@@ -151,13 +116,3 @@ def get_chicago_price(cache, date_list=[]):
 def get_prices(cache, date_list):
     v = SanMartin(cache)
     return v.get(date_list)
-
-
-def get_dataset(cache, date_list=[], places=[]):
-    adapt = lambda p: (date_to_int(p['datetime']), p['price'])
-    prices = {}
-    prices['chicago'] = get_chicago_price(cache, date_list)
-    prices['afascl'] = get_prices(cache, date_list, places)
-    params = list(chain(*prices['afascl']))
-    x, y = zip(*params)
-    return x, y

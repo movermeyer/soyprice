@@ -3,7 +3,7 @@
 
 from twython import Twython, TwythonError
 import datetime
-from scraper import get_prices, get_days, get_next_workable_day, date_to_int, get_dollars
+from scraper import get_prices, get_chicago_price, get_days, get_next_workable_day, date_to_int, get_dollars
 from statistic import forecast
 import pylab as pl
 from PIL import Image
@@ -80,6 +80,7 @@ def step():
         price_d, rmse_d, fix_d, fx_d, weights = forecast(*params)
         # soy
         afascl = get_prices(cache, date_list)
+        chicago = get_chicago_price(cache, date_list)
         params = zip(*afascl) + [next_x]
         price, rmse, fix, fx, weights = forecast(*params)
         print price_d
