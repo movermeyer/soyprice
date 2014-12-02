@@ -32,15 +32,12 @@ def step():
         day = get_next_workable_day(date_list[-1])
         # dollars
         dollars = get_dollars(cache, date_list)
-        # price_d, rmse_d, fix_d, fx_d, weights = forecast(dollars, day)
-        # soy
-        afascl = get_prices(cache, date_list)
+        # sanmartin
+        sanmartin = get_prices(cache, date_list)
         chicago = get_chicago_price(cache, date_list)
-        price, rmse, fix, fx, weights = forecast(afascl, day)
-        # print price_d
-        # filename = graph(afascl, fix , day, fx(date_to_int(day)), dollars,
-        #                         fix_d, day, price_d, rmse, weights)
-        filename = draw([afascl, chicago, dollars], day, 'graph.png')
+        # forecast soy sanmartin
+        price, rmse, fix, fx, weights = forecast(sanmartin, day)
+        filename = draw([sanmartin, chicago, dollars], day, 'graph.png')
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
                 (day.strftime('%d-%m-%Y'), price, int(rmse)),
