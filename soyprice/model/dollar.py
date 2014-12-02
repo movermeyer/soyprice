@@ -1,4 +1,5 @@
 from core import Variable
+import datetime
 
 
 class BlueDollar(Variable):
@@ -13,6 +14,6 @@ class BlueDollar(Variable):
                "x_dolar_get_grafico.asp?ric=ARSB=&tipo=yyyy")
         dollars = map(
             lambda (d, v): (datetime.datetime.strptime(d, "%Y/%m/%d").date(), v),
-            eval(requests.get(url).text))
+            eval(self.request(url)))
         dollars = filter(lambda (d, v): d in date_list, dollars)
         return map(lambda (d, v): v, dollars)

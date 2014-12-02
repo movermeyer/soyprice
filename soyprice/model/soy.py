@@ -1,4 +1,6 @@
 from core import Variable
+from bs4 import BeautifulSoup as beautifulsoup
+from itertools import chain
 
 
 class Soy(Variable):
@@ -18,7 +20,7 @@ class Chicago(Soy):
         if date_list[0] != self.today:
             return [None]
         url = 'http://www.indexmundi.com/commodities/?commodity=soybeans'
-        page = beautifulsoup(requests.get(url).text)
+        page = beautifulsoup(self.request(url))
         prices = map(lambda x: float(x.text),
                      page.select('#divDaily .dailyPrice'))
         return prices
@@ -35,7 +37,7 @@ class Afascl(Soy):
         date_str = date.strftime('%d-%m-%Y')
         url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
                'tk=1414884447433&mode=get&fecha=%s&_=' % date_str)
-        page = beautifulsoup(requests.get(url).text)
+        page = beautifulsoup(self.request(url))
         rows = page.select('tr')
         fix_string = lambda x: x.lower().strip(' \.\-')
         text = lambda x: fix_string(x.encode('utf-8').decode('ascii', 'ignore'))

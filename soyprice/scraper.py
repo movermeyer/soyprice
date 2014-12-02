@@ -1,9 +1,4 @@
 import datetime
-import requests
-from bs4 import BeautifulSoup as beautifulsoup
-from itertools import chain
-import re
-import json
 from model.soy import SanMartin, Chicago
 from model.dollar import BlueDollar
 

@@ -1,5 +1,6 @@
 import database as db
 import datetime
+import requests
 
 
 class Variable(object):
@@ -11,6 +12,9 @@ class Variable(object):
     @property
     def today(self):
         return datetime.datetime.now().date()
+
+    def request(self, url):
+        return requests.get(url).text
 
     def scrap(self, date_list):
         pass
