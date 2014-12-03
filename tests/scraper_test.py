@@ -1,5 +1,6 @@
 import unittest
-from soyprice import database, scraper
+from soyprice import scraper
+from soyprice.model import database
 import datetime
 
 
