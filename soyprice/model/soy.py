@@ -1,6 +1,7 @@
 from core import Variable
 from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
+import re
 
 
 class Soy(Variable):
