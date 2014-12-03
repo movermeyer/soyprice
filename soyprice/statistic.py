@@ -7,8 +7,6 @@ def date_to_int(dt):
 
 def forecast(variable, date_list, day):
     data = filter(lambda d: d[1], variable.get(date_list))
-    if variable.name == 'dollar/blue':
-        print data
     if len(data) == 0:
         return 0., 0., 0., lambda x: x, (1.)
     if len(data) == 1:
