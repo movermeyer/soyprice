@@ -8,6 +8,8 @@ class Variable(object):
     def __init__(self, cache):
         self.cache = cache
         self.name = 'global'
+        self.description = ''
+        self.reference = ''
 
     @property
     def today(self):

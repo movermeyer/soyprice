@@ -7,7 +7,7 @@ from scraper import get_prices, get_chicago_price, get_days, get_next_workable_d
 from statistic import forecast
 import numpy as np
 import database as db
-from grapher import draw, graph
+from grapher import draw
 
 
 APP_KEY = 'rogbcg4oUIEHGh35kxMVGAf2k'
@@ -28,7 +28,7 @@ def step():
     try:
         amount = 30
         date_list = get_days(datetime.datetime.today(), range(0, amount))
-	date_list.reverse()
+        date_list.reverse()
         day = get_next_workable_day(date_list[-1])
         # dollars
         dollars = get_dollars(cache, date_list)
@@ -36,8 +36,8 @@ def step():
         sanmartin = get_prices(cache, date_list)
         chicago = get_chicago_price(cache, date_list)
         # forecast soy sanmartin
-        price, rmse, fix, fx, weights = forecast(sanmartin, day)
-        filename = draw([sanmartin, chicago, dollars], day, 'graph.png')
+        price, rmse, fix, fx, weights = forecast(sanmartin, date_list, day)
+        filename = draw([sanmartin, chicago, dollars], date_list, day, 'graph.png')
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
                 (day.strftime('%d-%m-%Y'), price, int(rmse)),

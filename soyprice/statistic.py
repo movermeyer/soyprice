@@ -4,8 +4,10 @@ from math import log, e
 def date_to_int(dt):
     return int(dt.toordinal())
 
-def forecast(variable, day):
-    data = filter(lambda d: d[1], variable)
+def forecast(variable, date_list, day):
+    data = filter(lambda d: d[1], variable.get(date_list))
+    if variable.name == 'dollar/blue':
+        print data
     if len(data) == 0:
         return 0., 0., 0., lambda x: x, (1.)
     x, y = zip(*data)

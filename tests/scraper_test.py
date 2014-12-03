@@ -26,7 +26,7 @@ class TestScraper(unittest.TestCase):
         self.assertEquals(day, datetime.date(2014, 10, 13))
 
     def test_get_prices(self):
-        prices = scraper.get_prices(self.cache, [self.day])
+        prices = scraper.get_prices(self.cache, [self.day]).get([self.day])
         self.assertEquals(prices, self.prices)
 
     def test_get_dataset(self):

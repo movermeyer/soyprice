@@ -7,6 +7,8 @@ class BlueDollar(Variable):
     def __init__(self, cache):
         super(BlueDollar, self).__init__(cache)
         self.name = 'dollar/blue'
+        self.description = 'Dolar blue en Argentina'
+        self.reference = 'ARS/USD'
 
     def scrap(self, date_list):
         # Return a list of prices

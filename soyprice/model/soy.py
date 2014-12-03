@@ -8,6 +8,7 @@ class Soy(Variable):
     def __init__(self, cache):
         super(Soy, self).__init__(cache)
         self.name = 'soy'
+        self.reference = 'ARS/TN'
 
 
 class Chicago(Soy):
@@ -15,6 +16,8 @@ class Chicago(Soy):
     def __init__(self, cache):
         super(Chicago, self).__init__(cache)
         self.name += '/chicago'
+        self.description = 'Soja en Chicago'
+        self.reference = 'USD/TN'
 
     def scrap(self, date_list):
         if date_list[0] != self.today:
@@ -59,6 +62,7 @@ class SanMartin(Afascl):
     def __init__(self, cache):
         super(SanMartin, self).__init__(cache)
         self.name += '/sanmartin'
+        self.description = 'Soja puerto San Martin'
 
     def scrap(self, date_list):
         prices = map(lambda d: self.scrap_date(d, 'san'),
