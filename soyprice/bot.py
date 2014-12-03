@@ -20,7 +20,7 @@ twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 def tweet(status, image):
     photo = open(image, 'rb')
     template = "%s [https://github.com/limiear/soyprice]"
-    twitter.upload_media(media=photo, status=template % status)
+    twitter.update_status_with_media(media=photo, status=template % status)
 
 
 def step():
