@@ -1,5 +1,5 @@
 import unittest
-from soyprice import database as db
+from soyprice.model import database as db
 import os
 
 
