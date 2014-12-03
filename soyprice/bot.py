@@ -6,7 +6,7 @@ import datetime
 from scraper import get_prices, get_chicago_price, get_days, get_next_workable_day, date_to_int, get_dollars
 from statistic import forecast
 import numpy as np
-import database as db
+import model.database as db
 from grapher import draw
 
 
