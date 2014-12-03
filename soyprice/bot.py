@@ -3,9 +3,9 @@
 
 from twython import Twython, TwythonError
 import datetime
-from scraper import get_prices, get_chicago_price, get_days, get_next_workable_day, date_to_int, get_dollars
+from scraper import (get_prices, get_chicago_price, get_days,
+                     get_next_workable_day, get_dollars)
 from statistic import forecast
-import numpy as np
 import model.database as db
 from grapher import draw
 
@@ -37,13 +37,13 @@ def step():
         chicago = get_chicago_price(cache, date_list)
         # forecast soy sanmartin
         price, rmse, fix, fx, weights = forecast(sanmartin, date_list, day)
-        filename = draw([sanmartin, chicago, dollars], date_list, day, 'graph.png')
+        filename = draw([sanmartin, chicago, dollars],
+                        date_list, day, 'graph.png')
         tweet(('Forecast Soja puerto San Martín con descarga para el'
                ' %s: AR$ %.f (RMSE: AR$ %i)') %
-                (day.strftime('%d-%m-%Y'), price, int(rmse)),
-               filename)
+              (day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
     except TwythonError as e:
-        pass
+        print e
     db.close(cache)
 
 step()
