@@ -37,24 +37,25 @@ class Afascl(Soy):
         self.name += '/afascl'
 
     def scrap_date(self, date, place):
-        print date, place
         date_str = date.strftime('%d-%m-%Y')
         url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
                'tk=1414884447433&mode=get&fecha=%s&_=' % date_str)
         page = beautifulsoup(self.request(url))
         rows = page.select('tr')
         fix_string = lambda x: x.lower().strip(' \.\-')
-        text = lambda x: fix_string(x.encode('utf-8').decode('ascii', 'ignore'))
+        text = (lambda x: fix_string(x.encode('utf-8')
+                                     .decode('ascii', 'ignore')))
         fix_float = lambda x: re.sub('\,', '.', re.sub('\.\.', '.', x))
         cast = (lambda x: float(fix_float(x))
                 if len(x) > 0 and x[0].isdigit() else text(x))
         texts = lambda row, tag: [cast(c.text) for c in row.select(tag)]
-        get_price = lambda row: texts(row, 'th') + texts(row,'td')
+        get_price = lambda row: texts(row, 'th') + texts(row, 'td')
         prices = map(get_price, rows)
-        soy_with_download = lambda x: ('soja' in x[0] and 'con descarga' in x[4]
-                                  and x[2] > 0 and place in x[1])
+        soy_with_download = lambda x: ('soja' in x[0]
+                                       and 'con descarga' in x[4]
+                                       and x[2] > 0 and place in x[1])
         prices = map(lambda x: x[2],
-                        filter(soy_with_download, prices))
+                     filter(soy_with_download, prices))
         return prices
 
 
