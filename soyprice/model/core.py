@@ -33,7 +33,9 @@ class Variable(object):
         if self.should_scrap(date):
             price = self.scrap([date])
             price = price[0] if len(price) else price
-            db.get(self.cache, self.name)[date] = price
+            var = db.get(self.cache, self.name)
+            var[date] = price
+            db.set(self.cache, self.name, var)
             db.sync(self.cache)
         data = db.get(self.cache, self.name)
         return data[date] if date in data.keys() else None
