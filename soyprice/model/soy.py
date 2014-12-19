@@ -2,6 +2,7 @@ from core import Variable
 from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
 import re
+import datetime
 
 
 class Soy(Variable):
@@ -45,10 +46,13 @@ class Afascl(Soy):
         fix_string = lambda x: x.lower().strip(' \.\-')
         text = (lambda x: fix_string(x.encode('utf-8')
                                      .decode('ascii', 'ignore')))
-        fix_float = lambda x: re.sub('\,', '.', re.sub('\.\.', '.', x))
-        cast = (lambda x: float(fix_float(x))
-                if len(x) > 0 and x[0].isdigit() else text(x))
-        texts = lambda row, tag: [cast(c.text) for c in row.select(tag)]
+        fix_float = lambda x: re.sub('\d*\,\d*', '.',
+                                     re.sub('\d*\.\.\d*', '.', x))
+        is_digit = lambda x: x.isdigit()
+        all_digits = lambda x: all(map(is_digit, x))
+        cast = lambda x: float(x) if all_digits(x.split('.')) else text(x)
+        texts = lambda row, tag: [cast(fix_float(c.text))
+                                  for c in row.select(tag)]
         get_price = lambda row: texts(row, 'th') + texts(row, 'td')
         prices = map(get_price, rows)
         soy_with_download = lambda x: ('soja' in x[0]
