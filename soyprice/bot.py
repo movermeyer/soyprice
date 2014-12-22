@@ -9,43 +9,74 @@ from statistic import forecast
 import model.database as db
 from grapher import draw
 import time
+from twitter_keys import *
 
 
-APP_KEY = 'rogbcg4oUIEHGh35kxMVGAf2k'
-APP_SECRET = 'skkBp744JPEAXDnz0O3ZgxPX4qOpGU4Ao7rW588w1FTx4Laax4'
-OAUTH_TOKEN = '282317077-WksqawGHtDE7ROc02ptId5Uei22hWEpnUe8NmGY9'
-OAUTH_TOKEN_SECRET = 'ZaXiSkd4KIEiL7gf8OK63i4BteILTQKDaCNNOC5jhYHtm'
-twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+def twython(func):
+    def func_wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except TwythonError as e:
+            print e
+    return func_wrapper
 
 
-def tweet(status, image):
-    photo = open(image, 'rb')
-    template = "%s [https://github.com/limiear/soyprice]"
-    time.sleep(10)
-    twitter.update_status_with_media(media=photo, status=template % status)
+class Presenter(object):
 
-
-def step():
-    cache = db.open()
-    try:
+    def __init__(self):
+        self.twitter = Twython(
+            APP_KEY,
+            APP_SECRET,
+            OAUTH_TOKEN,
+            OAUTH_TOKEN_SECRET
+        )
         amount = 30
-        date_list = get_days(datetime.datetime.today(), range(0, amount))
-        date_list.reverse()
-        day = get_next_workable_day(date_list[-1])
-        # dollars
-        dollars = get_dollars(cache, date_list)
-        # sanmartin
-        sanmartin = get_prices(cache, date_list)
-        chicago = get_chicago_price(cache, date_list)
-        # forecast soy sanmartin
-        price, rmse, fix, fx, weights = forecast(sanmartin, date_list, day)
-        filename = draw([sanmartin, chicago, dollars],
-                        date_list, day, 'graph.png')
-        tweet(('Forecast Soja puerto San Martín con descarga para el'
-               ' %s: AR$ %.f (RMSE: AR$ %i)') %
-              (day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
-    except TwythonError as e:
-        print e
-    db.close(cache)
+        self.date_list = get_days(datetime.datetime.today(),
+                                  range(0, amount))
+        self.date_list.reverse()
+        self.day = get_next_workable_day(self.date_list[-1])
 
-step()
+    def upload_media(self, image):
+        photo = open(image, 'rb')
+        return self.twitter.upload_media(media=photo)
+
+    def tweet(self, status, images):
+        time.sleep(10)
+        medias = map(lambda i: self.upload_media(i)['media_id'], images)
+        template = "%s [https://github.com/limiear/soyprice]"
+        self.twitter.update_status(media_ids=medias,
+                                   status=template % status)
+
+    @twython
+    def dollar_showcase(self, cache):
+        dollars = get_dollars(cache, self.date_list)
+        price, rmse, fix, fx, weights = forecast(dollars, self.date_list,
+                                                 self.day)
+        filename = draw([dollars], self.date_list, self.day, 'graph_dollar.png')
+        self.tweet(('Forecast Dollar Blue para el %s: AR$ %.2f '
+                    '(RMSE: AR$ %.2f)') %
+                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+
+    @twython
+    def soy_showcase(self, cache):
+        # sanmartin
+        sanmartin = get_prices(cache, self.date_list)
+        chicago = get_chicago_price(cache, self.date_list)
+        # forecast soy sanmartin
+        price, rmse, fix, fx, weights = forecast(sanmartin, self.date_list,
+                                                 self.day)
+        filename = draw([sanmartin, chicago],
+                        self.date_list, self.day, 'graph_soy.png')
+        self.tweet(('Forecast Soja puerto San Martín con descarga para el'
+                    ' %s: AR$ %.f (RMSE: AR$ %i)') %
+                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+
+    def demonstrate(self):
+        cache = db.open()
+        self.dollar_showcase(cache)
+        self.soy_showcase(cache)
+        db.close(cache)
+
+
+presenter = Presenter()
+presenter.demonstrate()

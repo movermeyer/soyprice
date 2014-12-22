@@ -11,7 +11,11 @@ class Graph(object):
     def add(self, variable):
         self.variables.append(variable)
 
-    def save_variable(self, variable, date_list, day):
+    def create_figure(self):
+        pl.figure(figsize=(8, 4), dpi=100)
+        pl.suptitle('forecasted by @limiear', y=0.05)
+
+    def put_data_in_figure(self, variable, date_list, day):
         price, rmse, fix, fx, weights = forecast(variable, date_list, day)
         data = filter(lambda d: d[1], variable.get(date_list))
         x, y = zip(*data)
@@ -26,8 +30,7 @@ class Graph(object):
                   max(x_values) + border,
                   min(y_values) - border * ratio,
                   max(y_values) + border * ratio)
-        count = len(self.variables)
-        sp = pl.subplot(count, 1, self.variables.index(variable) + 1)
+        sp = pl.subplot(1, 1, 1)
         sp.axis(limits)
         sp.set_title(variable.description)
         sp.scatter(x, y, marker=".", linewidth=0.5)
@@ -43,18 +46,26 @@ class Graph(object):
         sp.yaxis.set_label_position("right")
         sp.yaxis.label.set_text(variable.reference)
         sp.yaxis.label.set_size(10)
-        sp.set_xlabel("ventana de %i dias previos" % (x[-1] + 1 - x[0]), fontsize=10)
+        sp.set_xlabel("%i days window" % (x[-1] + 1 - x[0]), fontsize=10)
+
+    def save_figure(self, variable, filename):
+        index = self.variables.index(variable)
+        g = filename.split('.')
+        filename = '%s_%i.%s' % ('.'.join(g[:-1]), index, g[-1])
+        pl.savefig(filename, dpi=100)
+        return filename
+
+    def save_variable(self, variable, date_list, day, filename):
+        self.create_figure()
+        self.put_data_in_figure(variable, date_list, day)
+        return self.save_figure(variable, filename)
 
     def save(self, date_list, day, filename):
-        next_x = date_to_int(day)
-        pl.figure(figsize=(8, 4 * len(self.variables)), dpi=100)
-        pl.suptitle('Forecast realizado por @limiear')
-        map(lambda v: self.save_variable(v, date_list, day), self.variables)
-        pl.savefig(filename, dpi=100)
+        return map(lambda v: self.save_variable(v, date_list, day, filename),
+                   self.variables)
 
 
 def draw(variables, date_list, day, filename):
     graph = Graph()
     list(map(graph.add, variables))
-    graph.save(date_list, day, filename)
-    return filename
+    return graph.save(date_list, day, filename)
