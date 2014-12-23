@@ -38,9 +38,12 @@ class Afascl(Soy):
         self.name += '/afascl'
 
     def scrap_date(self, date, place):
-        date_str = date.strftime('%d-%m-%Y')
-        url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
-               'tk=1414884447433&mode=get&fecha=%s&_=' % date_str)
+        if date == self.today:
+            url = 'http://afascl.coop/afadiario/home/diario.php'
+        else:
+            date_str = date.strftime('%d-%m-%Y')
+            url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
+                   'tk=1414884447433&mode=get&fecha=%s&_=' % date_str)
         page = beautifulsoup(self.request(url))
         rows = page.select('tr')
         fix_string = lambda x: x.lower().strip(' \.\-')
