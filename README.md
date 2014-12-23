@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/limiear/soyprice.png?label=ready&title=Ready)](https://waffle.io/limiear/soyprice)
 soyprice
 ========
 
