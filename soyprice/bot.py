@@ -50,7 +50,7 @@ class Presenter(object):
     @twython
     def dollar_showcase(self, cache):
         dollars = get_dollars(cache, self.date_list)
-        price, rmse, fix, fx, weights = forecast(dollars, self.date_list,
+        price, rmse, _, fx, weights = forecast(dollars, self.date_list,
                                                  self.day)
         filename = draw([dollars], self.date_list, self.day, 'graph_dollar.png')
         self.tweet(('Forecast Dollar Blue para el %s: AR$ %.2f '
@@ -63,7 +63,7 @@ class Presenter(object):
         sanmartin = get_prices(cache, self.date_list)
         chicago = get_chicago_price(cache, self.date_list)
         # forecast soy sanmartin
-        price, rmse, fix, fx, weights = forecast(sanmartin, self.date_list,
+        price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
                                                  self.day)
         filename = draw([sanmartin, chicago],
                         self.date_list, self.day, 'graph_soy.png')
