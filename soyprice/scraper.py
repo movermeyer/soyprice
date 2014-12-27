@@ -22,15 +22,13 @@ def date_to_int(dt):
 def get_dollars(cache, date_list=[]):
     v = BlueDollar(cache)
     return v
-    # return v.get(date_list)
+
 
 def get_chicago_price(cache, date_list=[]):
     v = Chicago(cache)
     return v
-    # return v.get(date_list)
 
 
 def get_prices(cache, date_list):
     v = SanMartin(cache)
     return v
-    # return v.get(date_list)
