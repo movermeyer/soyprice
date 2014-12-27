@@ -39,9 +39,6 @@ class Afascl(Soy):
         self.name += '/afascl'
         self.translator = Translator(from_lang="es", to_lang="en")
 
-    def should_scrap(self, date):
-        return date == self.today
-
     def obtain_prices(self, page, place):
         rows = page.select('tr')
         fix_string = lambda x: x.lower().strip(' \.\-')
