@@ -4,7 +4,7 @@ from soyprice.model import database as db
 import os
 
 
-class TestScraper(abstract.TestCase):
+class TestDatabase(abstract.TestCase):
 
     def setUp(self):
         self.remove('cache*')
