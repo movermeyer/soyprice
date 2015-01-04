@@ -1,4 +1,5 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 from soyprice.model.soy import SanMartin
 import os
@@ -6,10 +7,10 @@ import datetime
 import requests
 
 
-class TestSanMartin(unittest.TestCase):
+class TestSanMartin(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
         self.var = SanMartin(self.cache)
         self.date_list = [datetime.date(2014,9,8) + datetime.timedelta(days=i)

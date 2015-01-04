@@ -1,4 +1,5 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 from soyprice.model.soy import Chicago
 import os
@@ -6,10 +7,10 @@ import datetime
 import requests
 
 
-class TestChicago(unittest.TestCase):
+class TestChicago(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
         self.var = Chicago(self.cache)
         self.date_list = [datetime.date(2014,10,8) + datetime.timedelta(days=i)

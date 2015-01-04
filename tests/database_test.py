@@ -1,12 +1,13 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 import os
 
 
-class TestScraper(unittest.TestCase):
+class TestScraper(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
 
     def tearDown(self):

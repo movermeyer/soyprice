@@ -1,4 +1,5 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 from soyprice.model.dollar import BlueDollar
 import os
@@ -6,10 +7,10 @@ import datetime
 import requests
 
 
-class TestDollar(unittest.TestCase):
+class TestDollar(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
         self.var = BlueDollar(self.cache)
         self.date_list = [datetime.date(2014,10,8) + datetime.timedelta(days=i)

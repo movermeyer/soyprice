@@ -1,15 +1,15 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 from soyprice.model.soy import Afascl
-import os
 import datetime
 import requests
 
 
-class TestAfascl(unittest.TestCase):
+class TestAfascl(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
         self.var = Afascl(self.cache)
         self.date_list = [datetime.date(2014,10,8) + datetime.timedelta(days=i)

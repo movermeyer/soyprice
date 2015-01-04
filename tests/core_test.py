@@ -1,4 +1,5 @@
 import unittest
+import abstract
 from soyprice.model import database as db
 from soyprice.model.core import Variable
 import os
@@ -6,10 +7,10 @@ import datetime
 import requests
 
 
-class TestCore(unittest.TestCase):
+class TestCore(abstract.TestCase):
 
     def setUp(self):
-        os.remove('cache.db')
+        self.remove('cache*')
         self.cache = db.open()
         self.var = Variable(self.cache)
         self.today = datetime.datetime.now().date()
