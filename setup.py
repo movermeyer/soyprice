@@ -28,7 +28,6 @@ def calculate_version():
 
 
 requirements = parse_requirements('requirements.txt')
-print requirements
 version_git = calculate_version()
 
 

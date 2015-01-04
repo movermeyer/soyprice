@@ -26,14 +26,6 @@ class TestScraper(unittest.TestCase):
         day = scraper.get_next_workable_day(datetime.date(2014, 10, 10))
         self.assertEquals(day, datetime.date(2014, 10, 13))
 
-    def test_get_prices(self):
-        prices = scraper.get_prices(self.cache, [self.day]).get([self.day])
-        self.assertEquals(prices, self.prices)
-
-    def test_get_dataset(self):
-        # prices = scraper.get_dataset(self.day)
-        pass  # print prices
-
 
 if __name__ == '__main__':
     unittest.main()

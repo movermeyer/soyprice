@@ -1,6 +1,5 @@
 import datetime
-from model.soy import SanMartin, Chicago
-from model.dollar import BlueDollar
+from model import SanMartin, Chicago, BlueDollar
 
 
 def get_days(base, defined_range=range(0,15)):
@@ -17,18 +16,3 @@ def get_next_workable_day(date):
 
 def date_to_int(dt):
     return int(dt.toordinal())
-
-
-def get_dollars(cache, date_list=[]):
-    v = BlueDollar(cache)
-    return v
-
-
-def get_chicago_price(cache, date_list=[]):
-    v = Chicago(cache)
-    return v
-
-
-def get_prices(cache, date_list):
-    v = SanMartin(cache)
-    return v
