@@ -14,7 +14,7 @@ class TestAfascl(abstract.TestCase):
         self.var = Afascl(self.cache)
         self.date_list = [datetime.date(2014,10,8) + datetime.timedelta(days=i)
                           for i in range(3)]
-        self.today_list = [datetime.datetime.now().date()]
+        self.today = datetime.datetime.now().date()
         self.values = {
             'bla': [2140., 2140., 2120.],
             'san': [2260., 2300., 2300.]
@@ -28,6 +28,10 @@ class TestAfascl(abstract.TestCase):
             result = map(lambda x: self.var.scrap_date(x, place)[0],
                          self.date_list)
             self.assertEquals(result, values)
+
+    def test_scrap_today_date(self):
+        result = self.var.scrap_date(self.today, 'san')
+        self.assertGreater(result, 0.)
 
 
 if __name__ == '__main__':
