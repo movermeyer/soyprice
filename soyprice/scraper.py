@@ -12,7 +12,3 @@ def get_next_workable_day(date):
     while day.weekday() > 4:
         day = calculate(day)
     return day
-
-
-def date_to_int(dt):
-    return int(dt.toordinal())

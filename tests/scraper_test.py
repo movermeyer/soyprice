@@ -21,10 +21,6 @@ class TestScraper(unittest.TestCase):
         day = scraper.get_next_workable_day(datetime.date(2014, 10, 10))
         self.assertEquals(day, datetime.date(2014, 10, 13))
 
-    def test_date_to_int(self):
-        number = scraper.date_to_int(self.day)
-        self.assertEquals(number, 735514)
-
 
 if __name__ == '__main__':
     unittest.main()

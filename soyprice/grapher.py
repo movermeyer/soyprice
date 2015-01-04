@@ -1,6 +1,5 @@
-from scraper import date_to_int
 import pylab as pl
-from statistic import forecast
+from statistic import forecast, date_to_int
 
 
 class Graph(object):
