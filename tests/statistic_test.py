@@ -36,5 +36,6 @@ class TestStatistic(unittest.TestCase):
         map(lambda test: self.assertAlmostEqual(test[0], test[1], 2),
             zip(weights, refs))
 
+
 if __name__ == '__main__':
     unittest.main()

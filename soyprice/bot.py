@@ -3,13 +3,13 @@
 
 from twython import Twython, TwythonError
 import datetime
-from scraper import (get_prices, get_chicago_price, get_days,
-                     get_next_workable_day, get_dollars)
-from statistic import forecast
+from scraper import get_days, get_next_workable_day
+from statistic import forecast, TimeRegression, VariableRegression
 import model.database as db
 from grapher import draw
 import time
 from twitter_keys import *
+from model import SanMartin, Chicago, BlueDollar
 
 
 def twython(func):
@@ -49,10 +49,11 @@ class Presenter(object):
 
     @twython
     def dollar_showcase(self, cache):
-        dollars = get_dollars(cache, self.date_list)
+        dollars = BlueDollar(cache)
         price, rmse, _, fx, weights = forecast(dollars, self.date_list,
                                                  self.day)
-        filename = draw([dollars], self.date_list, self.day, 'graph_dollar.png')
+        filename = draw(TimeRegression, [dollars],
+                        self.date_list, self.day, 'graph_dollar.png')
         self.tweet(('Forecast Dollar Blue para el %s: AR$ %.2f '
                     '(RMSE: AR$ %.2f)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
@@ -60,13 +61,15 @@ class Presenter(object):
     @twython
     def soy_showcase(self, cache):
         # sanmartin
-        sanmartin = get_prices(cache, self.date_list)
-        chicago = get_chicago_price(cache, self.date_list)
+        sanmartin = SanMartin(cache)
+        chicago = Chicago(cache)
         # forecast soy sanmartin
         price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
                                                  self.day)
-        filename = draw([sanmartin, chicago],
+        filename = draw(TimeRegression, [sanmartin],
                         self.date_list, self.day, 'graph_soy.png')
+        # filename = draw(VariableRegression, [sanmartin, chicago],
+        #                self.date_list, self.day, 'graph_soy_related.png')
         self.tweet(('Forecast Soja puerto San Martín con descarga para el'
                     ' %s: AR$ %.f (RMSE: AR$ %i)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
