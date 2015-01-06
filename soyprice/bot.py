@@ -64,6 +64,8 @@ class Presenter(object):
         sanmartin = SanMartin(cache)
         chicago = Chicago(cache)
         # forecast soy sanmartin
+        price, rmse, _, fx, weights = forecast(chicago, self.date_list,
+                                                 self.day)
         price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
                                                  self.day)
         filename = draw(TimeRegression, [sanmartin],
