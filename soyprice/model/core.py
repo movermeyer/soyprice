@@ -24,7 +24,7 @@ class Variable(object):
     def should_scrap(self, date):
         serie = db.get(self.cache, self.name)
         return (date not in serie.keys()
-                or (date == self.today and serie[date] is None))
+                or (serie[date] in [None, []]))
 
     def get_element(self, date):
         # Return a price

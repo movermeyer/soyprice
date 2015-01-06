@@ -18,6 +18,8 @@ def twython(func):
             func(*args, **kwargs)
         except TwythonError as e:
             print e
+        except Exception as e:
+            pass
     return func_wrapper
 
 
@@ -30,7 +32,7 @@ class Presenter(object):
             OAUTH_TOKEN,
             OAUTH_TOKEN_SECRET
         )
-        amount = 30
+        amount = 15
         self.date_list = get_days(datetime.datetime.today(),
                                   range(0, amount))
         self.date_list.reverse()

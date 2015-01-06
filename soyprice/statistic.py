@@ -8,9 +8,9 @@ def date_to_int(dt):
 def forecast(variable, date_list, day):
     data = filter(lambda d: d[1], variable.get(date_list))
     if len(data) == 0:
-        return 0., 0., 0., lambda x: x, (1.)
+        return 0., 0., [0.], lambda x: 0., [1.]
     if len(data) == 1:
-        return data[0][1], 0, [data[0][1]], lambda x: x, [1]
+        return data[0][1], 0., [data[0][1]], lambda x: data[0][1], [1]
     x, y = zip(*data)
     x = map(date_to_int, x)
     weights = map(lambda xi: (xi - x[0])/float(x[-1] - x[0]), x)
@@ -36,7 +36,7 @@ class Regression(object):
 
     def get_data(self, variable):
         data = filter(lambda d: d[1], variable.get(self.date_list))
-        if len(data) <= 1:
+        if data is []:
             raise Exception('No data available for %s' % variable.name)
         x, y = zip(*data)
         x = map(date_to_int, x)

@@ -59,21 +59,23 @@ class Afascl(Soy):
         return map(lambda x: x[2],
                    filter(soy_with_download, prices))
 
-    def scrap_date(self, date, place):
-        if date == self.today:
-            url = 'http://afascl.coop/afadiario/home/diario.php'
-        else:
+    def obtain_page(self, date):
+        get_page = lambda url: beautifulsoup(self.request(url))
+        url = 'http://afascl.coop/afadiario/home/diario.php'
+        page = get_page(url)
+        diary = page.select('.preciosdiario span')[0].text.split('\r\n')[0]
+        diary = self.translator.translate(diary.lower())
+        diary = datetime.datetime.strptime(diary, '%A %B %d, %Y').date()
+        if (diary != date):
             date_str = date.strftime('%d-%m-%Y')
             url = ('http://diario.afascl.coop/afaw/afa-tablas/dispo.do?'
                    'tk=1414884447433&mode=get&fecha=%s&_=' % date_str)
-        page = beautifulsoup(self.request(url))
-        has_price = True
-        if date == self.today:
-            today = page.select('.preciosdiario span')[0].text.split('\r\n')[0]
-            today = self.translator.translate(today.lower())
-            today = datetime.datetime.strptime(today, '%A %B %d, %Y').date()
-            has_price = (today == self.today)
-        return self.obtain_prices(page, place) if has_price else []
+            page = get_page(url)
+        return page
+
+    def scrap_date(self, date, place):
+        page = self.obtain_page(date)
+        return self.obtain_prices(page, place)
 
 
 class SanMartin(Afascl):
