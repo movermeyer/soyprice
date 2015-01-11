@@ -44,10 +44,10 @@ class Presenter(object):
 
     def tweet(self, status, images):
         time.sleep(10)
-        medias = map(lambda i: self.upload_media(i)['media_id'], images)
+        # medias = map(lambda i: self.upload_media(i)['media_id'], images)
         template = "%s [https://github.com/limiear/soyprice]"
-        self.twitter.update_status(media_ids=medias,
-                                   status=template % status)
+        # self.twitter.update_status(media_ids=medias,
+        #                           status=template % status)
 
     @twython
     def dollar_showcase(self, cache):
@@ -70,12 +70,17 @@ class Presenter(object):
                                                  self.day)
         price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
                                                  self.day)
+        filename = draw(TimeRegression, [chicago],
+                        self.date_list, self.day, 'graph_soy_chicago.png')
         filename = draw(TimeRegression, [sanmartin],
-                        self.date_list, self.day, 'graph_soy.png')
+                        self.date_list, self.day, 'graph_soy_sanmartin.png')
         # filename = draw(VariableRegression, [sanmartin, chicago],
         #                self.date_list, self.day, 'graph_soy_related.png')
         self.tweet(('Forecast Soja puerto San Martín con descarga para el'
                     ' %s: AR$ %.f (RMSE: AR$ %i)') %
+                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        self.tweet(('Forecast Soja Chicago para el'
+                    ' %s: U$D %.f (RMSE: U$D %i)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
 
     def demonstrate(self):
