@@ -68,20 +68,21 @@ class Presenter(object):
         # forecast soy sanmartin
         price, rmse, _, fx, weights = forecast(chicago, self.date_list,
                                                  self.day)
-        price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
-                                                 self.day)
         filename = draw(TimeRegression, [chicago],
                         self.date_list, self.day, 'graph_soy_chicago.png')
-        filename = draw(TimeRegression, [sanmartin],
-                        self.date_list, self.day, 'graph_soy_sanmartin.png')
-        # filename = draw(VariableRegression, [sanmartin, chicago],
-        #                self.date_list, self.day, 'graph_soy_related.png')
-        self.tweet(('Forecast Soja puerto San Martín con descarga para el'
-                    ' %s: AR$ %.f (RMSE: AR$ %i)') %
-                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
         self.tweet(('Forecast Soja Chicago para el'
                     ' %s: U$D %.f (RMSE: U$D %i)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        price, rmse, _, fx, weights = forecast(sanmartin, self.date_list,
+                                                 self.day)
+        filename = draw(TimeRegression, [sanmartin],
+                        self.date_list, self.day, 'graph_soy_sanmartin.png')
+        self.tweet(('Forecast Soja puerto San Martín con descarga para el'
+                    ' %s: AR$ %.f (RMSE: AR$ %i)') %
+                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        filename = draw(VariableRegression, [sanmartin, chicago],
+                        self.date_list, self.day, 'graph_soy_related.png')
+        print fileame
 
     def demonstrate(self):
         cache = db.open()

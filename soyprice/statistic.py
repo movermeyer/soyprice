@@ -60,4 +60,8 @@ class TimeRegression(Regression):
 class VariableRegression(Regression):
 
     def do(self):
-        pass
+        if len(self.variables) is not 2:
+            raise Exception('Invalid amount of variables for a '
+                            'VariableRegression.')
+        print 'VariableRegression'
+        return 0, 0, [0], [1], 0, 1, 0
