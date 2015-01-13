@@ -5,63 +5,120 @@ def date_to_int(dt):
     return int(dt.toordinal())
 
 
-def forecast(variable, date_list, day):
-    data = filter(lambda d: d[1], variable.get(date_list))
-    if len(data) == 0:
-        return 0., 0., [0.], lambda x: 0., [1.]
-    if len(data) == 1:
-        return data[0][1], 0., [data[0][1]], lambda x: data[0][1], [1]
-    x, y = zip(*data)
-    x = map(date_to_int, x)
-    weights = map(lambda xi: (xi - x[0])/float(x[-1] - x[0]), x)
-    fit = polyfit(x, y, 6, w=weights)
-    fx = poly1d(fit)
-    estimated = map(fx, x)
-    rmse = sqrt(sum(map(lambda (e, x, w): w * ((e - x) ** 2),
-                        zip(estimated, y, weights)))
-                / len(estimated))
-    future_x = date_to_int(day)
-    return fx(future_x), rmse, estimated, fx, weights
-
-
 class Regression(object):
 
-    def __init__(self, date_list, day):
+    def __init__(self, date_list, day, variables=[]):
         self.date_list = date_list
         self.day = day
-        self.variables = []
+        self.variables = variables
 
     def add(self, variable):
         self.variables.append(variable)
 
+    @property
+    def future_x(self):
+        return date_to_int(self.day)
+
+    @property
+    def show_x_values(self):
+        return False
+
     def get_data(self, variable):
         data = filter(lambda d: d[1], variable.get(self.date_list))
         if data is []:
-            raise Exception('No data available for %s' % variable.name)
+            return [0.], [0.]
         x, y = zip(*data)
         x = map(date_to_int, x)
         return x, list(y)
 
+    def pattern(self):
+        x, y = self.get_data(self.variables[0])
+        weights = self.weights(x)
+        fit = polyfit(x, y, self.degree, w=weights)
+        fx = poly1d(fit)
+        estimated = map(fx, x)
+        rmse = sqrt(sum(map(lambda (e, x, w): w * ((e - x) ** 2),
+                            zip(estimated, y, weights)))
+                    / len(estimated))
+        return fx, estimated, rmse
+
+    def check(self):
+        pass
+
+    def resume(self):
+        self.check()
+        x, y = self.data
+        fx, estimated, rmse = self.pattern()
+        next_x = self.future_x
+        next_y = fx(next_x)
+        return x, y, estimated, self.weights(x), rmse, next_x, next_y
+
 
 class TimeRegression(Regression):
 
-    def do(self):
+    @property
+    def description(self):
+        return self.variables[0].description
+
+    @property
+    def reference(self):
+        return self.variables[0].reference
+
+    @property
+    def degree(self):
+        return 2
+
+    @property
+    def data(self):
+        return self.get_data(self.variables[0])
+
+    def weights(self, x):
+        if len(x) <= 1:
+            return [1]
+        return map(lambda xi: (xi - x[0])/float(x[-1] - x[0]), x)
+
+    def check(self):
         if len(self.variables) is not 1:
-            raise Exception('Invalid amount of variables for a TimeRegression.')
-        variable = self.variables[0]
-        price, rmse, fix, fx, weights = forecast(variable,
-                                                 self.date_list, self.day)
-        x, y = self.get_data(variable)
-        next_x = date_to_int(self.day)
-        next_y = fx(next_x)
-        return x, y, fix, weights, rmse, next_x, next_y
+            raise Exception('TimeRegression should have only 1 variable.')
 
 
 class VariableRegression(Regression):
 
-    def do(self):
+    @property
+    def description(self):
+        descriptions = map(lambda v: v.description, self.variables)
+        return ' vs. '.join(descriptions)
+
+    @property
+    def reference(self):
+        return ''
+
+    @property
+    def degree(self):
+        return 0
+
+    @property
+    def future_x(self):
+        return self.data[0][-1]
+
+    @property
+    def show_x_values(self):
+        return True
+
+    @property
+    def data(self):
+        get_var = lambda vi: dict(zip(*(self.get_data(self.variables[vi]))))
+        var_x, var_y = get_var(0), get_var(1)
+        keys = filter(lambda k: k in var_y.keys(), var_x.keys())
+        make_pair = lambda k: [var_x[k], var_y[k]]
+        elements = zip(*map(make_pair, keys))
+        return map(list, elements)
+
+    def weights(self, x):
+        if len(x) <= 1:
+            return [1]
+        return map(lambda xi: 1, x)
+
+    def check(self):
         if len(self.variables) is not 2:
-            raise Exception('Invalid amount of variables for a '
-                            'VariableRegression.')
-        print 'VariableRegression'
-        return 0, 0, [0], [1], 0, 1, 0
+            raise Exception('VariableRegression should have always 2 variables.')

@@ -1,11 +1,7 @@
 import pylab as pl
-from statistic import forecast, date_to_int
 
 
 class Graph(object):
-
-    def __init__(self, regression):
-        self.regression = regression
 
     def create_figure(self):
         pl.figure(figsize=(8, 4), dpi=100)
@@ -46,32 +42,23 @@ class Graph(object):
         self.sp.plot([next_x], [next_y], color="red", marker="o")
         self.sp.plot(x, y, color="red", linewidth=1.0, linestyle="-",)
 
-    def put_data_in_figure(self, variable):
-        x, y, fix, weights, rmse, next_x, next_y = self.regression.do()
-        self.draw_title(x, y, next_x, next_y, variable.description)
-        self.draw_data(x, y, variable.reference)
+    def put_data_in_figure(self, regression):
+        x, y, fix, weights, rmse, next_x, next_y = regression.resume()
+        self.draw_title(x, y, next_x, next_y, regression.description)
+        self.draw_data(x, y, regression.reference)
         self.draw_rmse(x, zip(fix, weights), rmse)
         self.draw_estimated(x, fix, next_x, next_y)
 
-    def save_figure(self, variable, filename):
-        index = self.regression.variables.index(variable)
-        g = filename.split('.')
-        filename = '%s_%i.%s' % ('.'.join(g[:-1]), index, g[-1])
+    def save_figure(self, regression, filename):
         pl.savefig(filename, dpi=100)
         return filename
 
-    def save_variable(self, variable, date_list, day, filename):
+    def save(self, regression, filename):
         self.create_figure()
-        self.put_data_in_figure(variable)
-        return self.save_figure(variable, filename)
-
-    def save(self, date_list, day, filename):
-        return map(lambda v: self.save_variable(v, date_list, day, filename),
-                   self.regression.variables)
+        self.put_data_in_figure(regression)
+        return self.save_figure(regression, filename)
 
 
-def draw(strategy, variables, date_list, day, filename):
-    command = strategy(date_list, day)
-    graph = Graph(command)
-    list(map(command.add, variables))
-    return graph.save(date_list, day, filename)
+def draw(regression, filename):
+    graph = Graph()
+    return graph.save(regression, filename)
