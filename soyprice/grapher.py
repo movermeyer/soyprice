@@ -61,4 +61,4 @@ class Graph(object):
 
 def draw(regression, filename):
     graph = Graph()
-    return graph.save(regression, filename)
+    return [graph.save(regression, filename)]
