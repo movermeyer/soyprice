@@ -106,7 +106,7 @@ class VariableRegression(Regression):
         keys = filter(lambda k: k in var_y.keys(), var_x.keys())
         make_pair = lambda k: [var_x[k], var_y[k]]
         elements = zip(*map(make_pair, keys))
-        return map(list, elements)
+        return map(list, elements) if len(elements) > 0 else [[0.], [0.]]
 
     @property
     def future_x(self):

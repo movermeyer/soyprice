@@ -82,7 +82,7 @@ class Presenter(object):
         fx, _, rmse = regression.pattern()
         filename = draw(regression, 'graph_soy_related.png')
         price = fx(1.)
-        self.tweet(('Correlación entre Soja puerto San Martín con Chicago para'
+        self.tweet(('Correlación Soja pto. San Martín con Chicago para'
                     ' %s: AR$ %.f (RMSE: AR$ %i)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
 
