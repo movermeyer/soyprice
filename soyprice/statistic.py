@@ -24,6 +24,15 @@ class Regression(object):
         x = map(date_to_int, x)
         return x, list(y)
 
+    def weights(self, x):
+        if len(x) <= 1:
+            return [1]
+        return map(lambda xi: 1, x)
+
+    @property
+    def degree(self):
+        return 2
+
     def pattern(self):
         x, y = self.get_data(self.variables[0])
         weights = self.weights(x)
@@ -34,6 +43,10 @@ class Regression(object):
                             zip(estimated, y, weights)))
                     / len(estimated))
         return fx, estimated, rmse
+
+    @property
+    def data(self):
+        return self.get_data(self.variables[0])
 
     def check(self):
         pass
@@ -59,11 +72,7 @@ class TimeRegression(Regression):
 
     @property
     def degree(self):
-        return 2
-
-    @property
-    def data(self):
-        return self.get_data(self.variables[0])
+        return 3
 
     def weights(self, x):
         if len(x) <= 1:
@@ -91,10 +100,6 @@ class VariableRegression(Regression):
         return 1
 
     @property
-    def future_x(self):
-        return self.data[0][-1]
-
-    @property
     def data(self):
         get_var = lambda vi: dict(zip(*(self.get_data(self.variables[vi]))))
         var_x, var_y = get_var(0), get_var(1)
@@ -103,10 +108,10 @@ class VariableRegression(Regression):
         elements = zip(*map(make_pair, keys))
         return map(list, elements)
 
-    def weights(self, x):
-        if len(x) <= 1:
-            return [1]
-        return map(lambda xi: 1, x)
+    @property
+    def future_x(self):
+        x, y = self.data
+        return x[-1]
 
     def check(self):
         if len(self.variables) is not 2:

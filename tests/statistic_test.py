@@ -23,19 +23,6 @@ class TestStatistic(unittest.TestCase):
         number = statistic.date_to_int(self.day + datetime.timedelta(days=3))
         self.assertEquals(number, 735514 + 3)
 
-    def test_forecast(self):
-        result = statistic.forecast(self.dollar, self.date_list, self.day)
-        price, rmse, estimated, fx, weights = result
-        self.assertAlmostEqual(price, 14.60, 2)
-        self.assertAlmostEqual(rmse, 0.019, 2)
-        refs = [14.753, 14.900, 15.330, 15.470, 15.608]
-        map(lambda test: self.assertAlmostEqual(test[0], test[1], 2),
-            zip(estimated, refs))
-        self.assertNotIn(fx.__class__, [float, int, list])
-        refs = [-0.0, 0.166, 0.666, 0.83, 1.0]
-        map(lambda test: self.assertAlmostEqual(test[0], test[1], 2),
-            zip(weights, refs))
-
 
 if __name__ == '__main__':
     unittest.main()
