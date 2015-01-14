@@ -37,11 +37,9 @@ class TestRegression(unittest.TestCase):
         fx, estimated, rmse = self.regression.pattern()
         self.assertAlmostEqual(fx(735514), 14.553, 3)
         self.assertAlmostEqual(fx(735515), 14.366, 3)
-        self.assertEquals(estimated, [14.730853080749512,
-                                      14.899080276489258,
-                                      15.346494674682617,
-                                      15.476543426513672,
-                                      15.597047805786133])
+        tests = zip(estimated,
+                    [14.7308, 14.899, 15.346, 15.4765, 15.597])
+        map(lambda (res, ref): self.assertAlmostEqual(res, ref, 3), tests)
         self.assertAlmostEqual(rmse, 0.0353, 3)
 
     def test_check(self):
@@ -52,11 +50,8 @@ class TestRegression(unittest.TestCase):
         x, y, estimated, weights, rmse, next_x, next_y = self.regression.resume()
         self.assertEquals(x, [735513, 735512, 735509, 735508, 735507])
         self.assertEquals(y, [14.7, 14.95, 15.3, 15.5, 15.6])
-        self.assertEquals(estimated, [14.730853080749512,
-                                      14.899080276489258,
-                                      15.346494674682617,
-                                      15.476543426513672,
-                                      15.597047805786133])
+        tests = zip(estimated, [14.7308, 14.899, 15.346, 15.4765, 15.597])
+        map(lambda (res, ref): self.assertAlmostEqual(res, ref, 3), tests)
         self.assertAlmostEqual(rmse, 0.0353, 3)
         self.assertEquals(next_x, self.regression.future_x)
         self.assertAlmostEqual(next_y, 14.553, 3)
