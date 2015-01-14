@@ -12,16 +12,9 @@ class Regression(object):
         self.day = day
         self.variables = variables
 
-    def add(self, variable):
-        self.variables.append(variable)
-
     @property
     def future_x(self):
         return date_to_int(self.day)
-
-    @property
-    def show_x_values(self):
-        return False
 
     def get_data(self, variable):
         data = filter(lambda d: d[1], variable.get(self.date_list))
@@ -95,15 +88,11 @@ class VariableRegression(Regression):
 
     @property
     def degree(self):
-        return 0
+        return 1
 
     @property
     def future_x(self):
         return self.data[0][-1]
-
-    @property
-    def show_x_values(self):
-        return True
 
     @property
     def data(self):
