@@ -20,14 +20,14 @@ class Graph(object):
         self.sp.axis(limits)
         self.sp.set_title(description)
 
-    def draw_data(self, x, y, reference):
+    def draw_data(self, x, y, reference, x_label):
         self.sp.scatter(x, y, marker=".", linewidth=0.5)
         self.sp.yaxis.set_label_position("right")
         self.sp.yaxis.label.set_text(reference)
         self.sp.yaxis.label.set_size(10)
         self.sp.yaxis.tick_right()
         pl.xticks([], 0, endpoint=True)
-        self.sp.set_xlabel("%i days window" % (x[-1] + 1 - x[0]), fontsize=10)
+        self.sp.set_xlabel(x_label, fontsize=10)
 
     def draw_rmse(self, x, weights, rmse):
         w_s = lambda w: 1/(w if w > 0 else 0.001)
@@ -45,7 +45,7 @@ class Graph(object):
     def put_data_in_figure(self, regression):
         x, y, fix, weights, rmse, next_x, next_y = regression.resume()
         self.draw_title(x, y, next_x, next_y, regression.description)
-        self.draw_data(x, y, regression.reference)
+        self.draw_data(x, y, regression.reference, regression.x_label)
         self.draw_rmse(x, zip(fix, weights), rmse)
         self.draw_estimated(x, fix, next_x, next_y)
 

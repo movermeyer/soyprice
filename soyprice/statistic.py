@@ -34,7 +34,7 @@ class Regression(object):
         return 2
 
     def pattern(self):
-        x, y = self.get_data(self.variables[0])
+        x, y = self.data
         weights = self.weights(x)
         fit = polyfit(x, y, self.degree, w=weights)
         fx = poly1d(fit)
@@ -83,6 +83,11 @@ class TimeRegression(Regression):
         if len(self.variables) is not 1:
             raise Exception('TimeRegression should have only 1 variable.')
 
+    @property
+    def x_label(self):
+        x, y = self.data
+        return "%i days window" % (x[-1] + 1 - x[0])
+
 
 class VariableRegression(Regression):
 
@@ -116,3 +121,8 @@ class VariableRegression(Regression):
     def check(self):
         if len(self.variables) is not 2:
             raise Exception('VariableRegression should have always 2 variables.')
+
+    @property
+    def x_label(self):
+        x, y = self.data
+        return "sample of %i values" % len(x)
