@@ -54,7 +54,7 @@ class Presenter(object):
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_dollar.png')
-        self.tweet(('Forecast Dollar Blue para el %s: AR$ %.2f '
+        self.tweet(('Estimación Dollar Blue para el %s: AR$ %.2f '
                     '(RMSE: AR$ %.2f)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
 
@@ -68,23 +68,22 @@ class Presenter(object):
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_soy_chicago.png')
-        self.tweet(('Forecast Soja Chicago para el'
-                    ' %s: U$D %.f (RMSE: U$D %i)') %
-                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        self.tweet(('Estimación Soja Chicago para el'
+                    ' %s: U$D %.f (RMSE: U$D %.f)') %
+                   (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
         regression = TimeRegression(self.date_list, self.day, [sanmartin])
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_soy_sanmartin.png')
-        self.tweet(('Forecast Soja puerto San Martín con descarga para el'
-                    ' %s: AR$ %.f (RMSE: AR$ %i)') %
-                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
         regression = VariableRegression(self.date_list, self.day, [sanmartin, chicago])
+        self.tweet(('Estimación Soja puerto San Martín con descarga para el'
+                    ' %s: AR$ %.f (RMSE: AR$ %.f)') %
+                   (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
         fx, _, rmse = regression.pattern()
         filename = draw(regression, 'graph_soy_related.png')
         price = fx(1.)
-        self.tweet(('Correlación Soja pto. San Martín con Chicago para'
-                    ' %s: AR$ %.f (RMSE: AR$ %i)') %
-                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        self.tweet(('Correlación Soja Chicago con pto. San Martín haste el'
+                    ' %s: AR$ %.f (RMSE: AR$ %.f)') %
 
     def demonstrate(self):
         cache = db.open()

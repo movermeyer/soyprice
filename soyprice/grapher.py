@@ -5,7 +5,7 @@ class Graph(object):
 
     def create_figure(self):
         pl.figure(figsize=(8, 4), dpi=100)
-        pl.suptitle('forecasted by @limiear', y=0.05)
+        pl.suptitle('estimado por @limiear', y=0.05)
 
     def draw_title(self, x, y, next_x, next_y, description):
         self.sp = pl.subplot(1, 1, 1)
@@ -32,9 +32,9 @@ class Graph(object):
     def draw_rmse(self, x, weights, rmse):
         w_s = lambda w: 1/(w if w > 0 else 0.001)
         border_y = lambda b: map(lambda (x, w): x + b * rmse * w_s(w),
-                                          weights)
+                                 weights)
         draw_border = lambda b: self.sp.plot(x, border_y(b), color="green",
-                                        linewidth=1.0, linestyle="--",)
+                                             linewidth=1.0, linestyle="--",)
         draw_border(-1)
         draw_border(1)
 
