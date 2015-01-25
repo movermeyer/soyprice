@@ -75,15 +75,18 @@ class Presenter(object):
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_soy_sanmartin.png')
-        regression = VariableRegression(self.date_list, self.day, [sanmartin, chicago])
         self.tweet(('Estimación Soja puerto San Martín con descarga para el'
                     ' %s: AR$ %.f (RMSE: AR$ %.f)') %
                    (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
+        regression = VariableRegression(self.date_list,
+                                        self.day, [chicago, sanmartin])
         fx, _, rmse = regression.pattern()
         filename = draw(regression, 'graph_soy_related.png')
-        price = fx(1.)
+        price = fx(regression.future_x)
+        x, y, dt = regression.data
         self.tweet(('Correlación Soja Chicago con pto. San Martín haste el'
                     ' %s: AR$ %.f (RMSE: AR$ %.f)') %
+                   (max(dt).strftime('%d-%m-%Y'), price, rmse), filename)
 
     def demonstrate(self):
         cache = db.open()

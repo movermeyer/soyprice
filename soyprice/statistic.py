@@ -1,4 +1,5 @@
 from numpy import polyfit, poly1d, sqrt
+from datetime import datetime
 
 
 def date_to_int(dt):
@@ -18,11 +19,11 @@ class Regression(object):
 
     def get_data(self, variable):
         data = filter(lambda d: d[1], variable.get(self.date_list))
-        if data is []:
-            return [0.], [0.]
+        if not data:
+            return [0.], [0.], [datetime.now().date()]
         x, y = zip(*data)
-        x = map(date_to_int, x)
-        return x, list(y)
+        x_int = map(date_to_int, x)
+        return x_int, list(y), x
 
     def weights(self, x):
         if len(x) <= 1:
@@ -34,7 +35,7 @@ class Regression(object):
         return 2
 
     def pattern(self):
-        x, y = self.data
+        x, y, dt = self.data
         weights = self.weights(x)
         fit = polyfit(x, y, self.degree, w=weights)
         fx = poly1d(fit)
@@ -53,7 +54,7 @@ class Regression(object):
 
     def resume(self):
         self.check()
-        x, y = self.data
+        x, y, dt = self.data
         fx, estimated, rmse = self.pattern()
         next_x = self.future_x
         next_y = fx(next_x)
@@ -85,7 +86,7 @@ class TimeRegression(Regression):
 
     @property
     def x_label(self):
-        x, y = self.data
+        x, y, dt = self.data
         return "%i days window" % (x[-1] + 1 - x[0])
 
 
@@ -106,16 +107,18 @@ class VariableRegression(Regression):
 
     @property
     def data(self):
-        get_var = lambda vi: dict(zip(*(self.get_data(self.variables[vi]))))
+        get_var = lambda vi: dict(zip(*(self.get_data(
+            self.variables[vi])[:-1])))
         var_x, var_y = get_var(0), get_var(1)
         keys = filter(lambda k: k in var_y.keys(), var_x.keys())
-        make_pair = lambda k: [var_x[k], var_y[k]]
-        elements = zip(*map(make_pair, keys))
-        return map(list, elements) if len(elements) > 0 else [[0.], [0.]]
+        make_tuple = lambda k: [var_x[k], var_y[k], k]
+        elements = zip(*map(make_tuple, keys))
+        return (map(list, elements) if len(elements) > 0 else
+                [[0.], [0.], datetime.now().date()])
 
     @property
     def future_x(self):
-        x, y = self.data
+        x, y, dt = self.data
         return x[-1]
 
     def check(self):
@@ -125,5 +128,5 @@ class VariableRegression(Regression):
 
     @property
     def x_label(self):
-        x, y = self.data
+        x, y, dt = self.data
         return "sample of %i values" % len(x)

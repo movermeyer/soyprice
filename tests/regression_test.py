@@ -21,15 +21,21 @@ class TestRegression(unittest.TestCase):
         self.assertEquals(self.regression.future_x, 735514)
 
     def test_get_data(self):
-        x, y = self.regression.get_data(self.regression.variables[0])
+        x, y, dt = self.regression.get_data(self.regression.variables[0])
         self.assertEquals(x, [735513, 735512, 735509, 735508, 735507])
         self.assertEquals(y, [14.7, 14.95, 15.3, 15.5, 15.6])
+        self.assertEquals(dt, (
+            (datetime.date(2014, 10, 7),
+             datetime.date(2014, 10, 6),
+             datetime.date(2014, 10, 3),
+             datetime.date(2014, 10, 2),
+             datetime.date(2014, 10, 1))))
 
     def test_degree(self):
         self.assertEquals(self.regression.degree, 2)
 
     def test_weights(self):
-        x, y = self.regression.get_data(self.regression.variables[0])
+        x, y, dt = self.regression.get_data(self.regression.variables[0])
         self.assertEquals(self.regression.weights(x), [1, 1, 1, 1, 1])
         self.assertEquals(self.regression.weights(x[0:2]), [1, 1])
 

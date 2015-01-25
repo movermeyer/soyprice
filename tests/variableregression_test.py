@@ -11,7 +11,7 @@ class TestVariableRegression(unittest.TestCase):
     def setUp(self):
         self.day = datetime.date(2014, 10, 8)
         self.date_list = map(lambda i: self.day - datetime.timedelta(days=i),
-                             range(1,8))
+                             range(1, 8))
         self.cache = db.open()
         self.dollar = BlueDollar(self.cache)
         self.sanmartin = SanMartin(self.cache)
@@ -32,7 +32,7 @@ class TestVariableRegression(unittest.TestCase):
         self.assertEquals(self.regression.degree, 1)
 
     def test_weights(self):
-        x, y = self.regression.get_data(self.regression.variables[0])
+        x, y, dt = self.regression.get_data(self.regression.variables[0])
         self.assertEquals(self.regression.weights(x),
                           [1.0, 1.0, 1.0, 1.0, 1.0])
         self.assertEquals(self.regression.weights(x[0:1]), [1])
@@ -54,9 +54,10 @@ class TestVariableRegression(unittest.TestCase):
             self.regression.check()
 
     def test_data(self):
-        x, y = self.regression.data
+        x, y, dt = self.regression.data
         self.assertEquals(x, [14.95, 15.6, 15.5, 15.3])
         self.assertEquals(y, [2270.0, 2260.0, 2250.0, 2220.0])
+        self.assertEquals(dt, [735512, 735507, 735508, 735509])
 
     def test_future_x(self):
         self.assertEquals(self.regression.future_x, 15.3)
