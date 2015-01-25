@@ -120,7 +120,8 @@ class VariableRegression(Regression):
 
     def check(self):
         if len(self.variables) is not 2:
-            raise Exception('VariableRegression should have always 2 variables.')
+            raise Exception('VariableRegression should have always '
+                            '2 variables.')
 
     @property
     def x_label(self):
