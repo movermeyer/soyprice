@@ -113,8 +113,8 @@ class VariableRegression(Regression):
         keys = filter(lambda k: k in var_y.keys(), var_x.keys())
         make_tuple = lambda k: [var_x[k], var_y[k], k]
         elements = zip(*map(make_tuple, keys))
-        return (map(list, elements) if len(elements) > 0 else
-                [[0.], [0.], datetime.now().date()])
+        empty = [[0.], [0.], [datetime.now().date()]]
+        return map(list, elements) if len(elements) > 0 else empty
 
     @property
     def future_x(self):
