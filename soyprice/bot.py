@@ -4,11 +4,11 @@
 from twython import Twython, TwythonError
 import datetime
 from scraper import get_days, get_next_workable_day
-from statistic import TimeRegression, VariableRegression, date_to_int
+from statistic import TimeRegression, VariableRegression
 import model.database as db
 from grapher import draw
 import time
-from twitter_keys import *
+from twitter_keys import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
 from model import SanMartin, Chicago, BlueDollar
 
 
