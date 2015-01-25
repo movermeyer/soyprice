@@ -10,7 +10,7 @@ class TestRegression(unittest.TestCase):
     def setUp(self):
         self.day = datetime.date(2014, 10, 8)
         self.date_list = map(lambda i: self.day - datetime.timedelta(days=i),
-                             range(1,8))
+                             range(1, 8))
         self.cache = db.open()
         self.dollar = BlueDollar(self.cache)
         self.regression = statistic.Regression(self.date_list,
@@ -53,7 +53,8 @@ class TestRegression(unittest.TestCase):
         pass
 
     def test_resume(self):
-        x, y, estimated, weights, rmse, next_x, next_y = self.regression.resume()
+        result = self.regression.resume()
+        x, y, estimated, weights, rmse, next_x, next_y = result
         self.assertEquals(x, [735513, 735512, 735509, 735508, 735507])
         self.assertEquals(y, [14.7, 14.95, 15.3, 15.5, 15.6])
         tests = zip(estimated, [14.7308, 14.899, 15.346, 15.4765, 15.597])
