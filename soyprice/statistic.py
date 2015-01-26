@@ -91,7 +91,7 @@ class TimeRegression(Regression):
     @property
     def x_label(self):
         x, y, dt = self.data
-        return "%i days window" % (x[-1] + 1 - x[0])
+        return "ventana de %i días" % (x[-1] + 1 - x[0])
 
 
 class VariableRegression(Regression):
@@ -133,4 +133,4 @@ class VariableRegression(Regression):
     @property
     def x_label(self):
         x, y, dt = self.data
-        return "sample of %i values" % len(x)
+        return "%i valores de muestra" % len(x)
