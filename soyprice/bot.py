@@ -64,7 +64,6 @@ class Presenter(object):
         sanmartin = SanMartin(cache)
         chicago = Chicago(cache)
         # foorecast soy sanmartin
-        """
         regression = TimeRegression(self.date_list, self.day, [chicago])
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
@@ -79,7 +78,6 @@ class Presenter(object):
         self.tweet(('Estimación Soja puerto San Martín con descarga para el'
                     ' %s: AR$ %.f (RMSE: AR$ %.f)') %
                    (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
-        """
         regression = VariableRegression(self.date_list,
                                         self.day, [chicago, sanmartin])
         fx, _, rmse = regression.pattern()
@@ -93,7 +91,7 @@ class Presenter(object):
 
     def demonstrate(self):
         cache = db.open()
-        # self.dollar_showcase(cache)
+        self.dollar_showcase(cache)
         self.soy_showcase(cache)
         db.close(cache)
 
