@@ -6,6 +6,10 @@ def date_to_int(dt):
     return int(dt.toordinal())
 
 
+def int_to_date(number):
+    return datetime.fromordinal(number)
+
+
 class Regression(object):
 
     def __init__(self, date_list, day, variables=[]):
