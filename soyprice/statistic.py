@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from numpy import polyfit, poly1d, sqrt
 from datetime import datetime
 
