@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from numpy import polyfit, poly1d, sqrt
 from datetime import datetime
 
@@ -94,7 +91,7 @@ class TimeRegression(Regression):
     @property
     def x_label(self):
         x, y, dt = self.data
-        return "ventana de %i días" % (x[-1] + 1 - x[0])
+        return "ventana de %i dias" % (x[-1] + 1 - x[0])
 
 
 class VariableRegression(Regression):
