@@ -42,11 +42,10 @@ class Presenter(object):
 
     def tweet(self, status, images):
         time.sleep(10)
-        # medias = map(lambda i: self.upload_media(i)['media_id'], images)
+        medias = map(lambda i: self.upload_media(i)['media_id'], images)
         template = "%s [https://github.com/limiear/soyprice]"
-        #self.twitter.update_status(media_ids=medias,
-        #                           status=template % status)
-        print template % status
+        self.twitter.update_status(media_ids=medias,
+                                   status=template % status)
 
     @twython
     def dollar_showcase(self, cache):
