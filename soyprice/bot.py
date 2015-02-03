@@ -42,10 +42,11 @@ class Presenter(object):
 
     def tweet(self, status, images):
         time.sleep(10)
-        medias = map(lambda i: self.upload_media(i)['media_id'], images)
+        # medias = map(lambda i: self.upload_media(i)['media_id'], images)
         template = "%s [https://github.com/limiear/soyprice]"
-        self.twitter.update_status(media_ids=medias,
-                                   status=template % status)
+        #self.twitter.update_status(media_ids=medias,
+        #                           status=template % status)
+        print template % status
 
     @twython
     def dollar_showcase(self, cache):
@@ -84,10 +85,12 @@ class Presenter(object):
         filename = draw(regression, 'graph_soy_related.png')
         price = fx(regression.future_x)
         x, y, dt = regression.data
+        m_dt = max(dt)
+        m_dt = int_to_date(m_dt) if isinstance(m_dt, int) else m_dt
         self.tweet(('Correlación Soja Chicago con pto. San Martín hasta el'
                     ' %s: AR$ %.f (RMSE: AR$ %.f)') %
-                    ((int_to_date(max(dt))).strftime('%d-%m-%Y'), price, rmse),
-                    filename)
+                   (m_dt.strftime('%d-%m-%Y'), price, rmse),
+                   filename)
 
     def demonstrate(self):
         cache = db.open()
