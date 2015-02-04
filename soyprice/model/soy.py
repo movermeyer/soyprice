@@ -40,8 +40,6 @@ class BCR(Soy):
         self.reference = 'AR$/TN'
 
     def scrap(self, date_list):
-        #if date_list[0] != self.today:
-        #    return [None]
         url = 'http://www.bcr.com.ar/Pages/Granos/Cotizaciones/default.aspx'
         page = beautifulsoup(self.request(url))
         rows = page.select('.ms-vb tr')
@@ -49,8 +47,10 @@ class BCR(Soy):
         to_date = lambda d: datetime.datetime.strptime(d, '%d/%m/%Y').date()
         dts = map(to_date, filter(lambda r: 'Fixing date' in r, text)[0][2:])
         prices = map(float, filter(lambda r: 'soybean' in r, text)[0][2:])
-        prices = zip(dts, prices)
-        return filter(lambda (d, p): d in date_list, prices)
+        prices = dict(zip(dts, prices))
+        prices = map(lambda dt: prices[dt],
+                     filter(lambda dt: dt in prices, date_list))
+        return prices
 
 
 class Afascl(Soy):

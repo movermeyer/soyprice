@@ -3,7 +3,6 @@ import abstract
 from soyprice.model import database as db
 from soyprice.model.soy import BCR
 import datetime
-import requests
 
 
 class TestBCR(abstract.TestCase):
@@ -12,7 +11,8 @@ class TestBCR(abstract.TestCase):
         self.remove('cache*')
         self.cache = db.open()
         self.var = BCR(self.cache)
-        self.date_list = [datetime.date(2014,10,8) + datetime.timedelta(days=i)
+        self.date_list = [datetime.date(2014, 10, 8) +
+                          datetime.timedelta(days=i)
                           for i in range(3)]
         self.today = datetime.datetime.now().date()
         self.values = {
@@ -24,7 +24,7 @@ class TestBCR(abstract.TestCase):
 
     def test_scrap(self):
         self.assertEquals(self.var.scrap(self.date_list), [])
-        self.assertGreater(self.var.scrap([self.today]), 1000.)
+        self.assertGreater(self.var.scrap([self.today])[0], 1000.)
 
 
 if __name__ == '__main__':

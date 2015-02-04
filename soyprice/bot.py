@@ -9,7 +9,7 @@ import model.database as db
 from grapher import draw
 import time
 from twitter_keys import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
-from model import SanMartin, Chicago, BlueDollar
+from model import SanMartin, Chicago, BlueDollar, BCR
 
 
 def twython(func):
@@ -46,6 +46,7 @@ class Presenter(object):
         template = "%s [https://github.com/limiear/soyprice]"
         self.twitter.update_status(media_ids=medias,
                                    status=template % status)
+        print template % status
 
     @twython
     def dollar_showcase(self, cache):
@@ -62,8 +63,16 @@ class Presenter(object):
     def soy_showcase(self, cache):
         # sanmartin
         sanmartin = SanMartin(cache)
+        rosario = BCR(cache)
         chicago = Chicago(cache)
         # foorecast soy sanmartin
+        regression = TimeRegression(self.date_list, self.day, [rosario])
+        fx, _, rmse = regression.pattern()
+        price = fx(regression.future_x)
+        filename = draw(regression, 'graph_soy_rosario.png')
+        self.tweet(('Estimación Soja Rosario para el'
+                    ' %s: AR$ %.f (RMSE: AR$ %.f)') %
+                   (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
         regression = TimeRegression(self.date_list, self.day, [chicago])
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
