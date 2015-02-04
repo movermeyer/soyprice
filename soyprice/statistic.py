@@ -51,7 +51,9 @@ class Regression(object):
 
     @property
     def data(self):
-        return self.get_data(self.variables[0])
+        if not hasattr(self, '_data'):
+            self._data = self.get_data(self.variables[0])
+        return self._data
 
     def check(self):
         pass
@@ -111,14 +113,17 @@ class VariableRegression(Regression):
 
     @property
     def data(self):
-        get_var = lambda vi: dict(zip(*(self.get_data(
-            self.variables[vi])[:-1])))
-        var_x, var_y = get_var(0), get_var(1)
-        keys = filter(lambda k: k in var_y.keys(), var_x.keys())
-        make_tuple = lambda k: [var_x[k], var_y[k], k]
-        elements = zip(*map(make_tuple, keys))
-        empty = [[0.], [0.], [datetime.now().date()]]
-        return map(list, elements) if len(elements) > 0 else empty
+        if not hasattr(self, '_data'):
+            get_var = lambda vi: dict(zip(*(self.get_data(
+                self.variables[vi])[:-1])))
+            var_x, var_y = get_var(0), get_var(1)
+            keys = filter(lambda k: k in var_y.keys(), var_x.keys())
+            make_tuple = lambda k: [var_x[k], var_y[k], k]
+            elements = zip(*map(make_tuple, keys))
+            empty = [[0.], [0.], [datetime.now().date()]]
+            data = map(list, elements) if len(elements) > 0 else empty
+            self._data = data
+        return self._data
 
     @property
     def future_x(self):
