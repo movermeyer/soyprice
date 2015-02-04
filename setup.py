@@ -51,12 +51,13 @@ def get_long_description():
 setup(
     name='soyprice',
     version=version_git,
-    author='Eloy Adonis Colell',
-    author_email='eloy.colell@gmail.com',
+    author='Limie',
+    author_email='limie.ar@gmail.com',
     packages=find_packages(),
     url='https://github.com/limiear/soyprice',
     license='GNU/GPLv3',
-    description=('A python library to show the soy price in a twitter timeline.'),
+    description=('A python library to show the soy price in a twitter '
+                 'timeline.'),
     long_description=get_long_description(),
     zip_safe=True,
     install_requires=requirements,
