@@ -32,6 +32,27 @@ class Chicago(Soy):
         return prices
 
 
+class BCR(Soy):
+    def __init__(self, cache):
+        super(BCR, self).__init__(cache)
+        self.name += '/bcr'
+        self.description = 'Soja en Rosario'
+        self.reference = 'AR$/TN'
+
+    def scrap(self, date_list):
+        #if date_list[0] != self.today:
+        #    return [None]
+        url = 'http://www.bcr.com.ar/Pages/Granos/Cotizaciones/default.aspx'
+        page = beautifulsoup(self.request(url))
+        rows = page.select('.ms-vb tr')
+        text = map(lambda r: [c.text for c in r.select('td')], rows)
+        to_date = lambda d: datetime.datetime.strptime(d, '%d/%m/%Y').date()
+        dts = map(to_date, filter(lambda r: 'Fixing date' in r, text)[0][2:])
+        prices = map(float, filter(lambda r: 'soybean' in r, text)[0][2:])
+        prices = zip(dts, prices)
+        return filter(lambda (d, p): d in date_list, prices)
+
+
 class Afascl(Soy):
 
     def __init__(self, cache):
