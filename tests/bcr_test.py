@@ -15,6 +15,7 @@ class TestBCR(abstract.TestCase):
                           datetime.timedelta(days=i)
                           for i in range(3)]
         self.today = datetime.datetime.now().date()
+        self.yesterday = self.today - datetime.timedelta(days=1)
         self.values = {
             'rosario': [2260., 2300., 2300.]
         }
@@ -25,7 +26,7 @@ class TestBCR(abstract.TestCase):
     def test_scrap(self):
         self.assertEquals(self.var.scrap(self.date_list), [])
         prices = self.var.scrap([self.today])
-        price = prices[0] if prices else None
+        price = prices[0] if prices else self.var.scrap([self.yesterday])
         self.assertGreater(price, 1000.)
 
 
