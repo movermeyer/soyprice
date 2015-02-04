@@ -24,7 +24,9 @@ class TestBCR(abstract.TestCase):
 
     def test_scrap(self):
         self.assertEquals(self.var.scrap(self.date_list), [])
-        self.assertGreater(self.var.scrap([self.today])[0], 1000.)
+        prices = self.var.scrap([self.today])
+        price = prices[0] if prices else None
+        self.assertGreater(price, 1000.)
 
 
 if __name__ == '__main__':
