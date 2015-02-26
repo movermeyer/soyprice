@@ -43,7 +43,7 @@ class Presenter(object):
     def tweet(self, status, images):
         time.sleep(10)
         medias = map(lambda i: self.upload_media(i)['media_id'], images)
-        template = "%s [https://github.com/limiear/soyprice]"
+        template = "soyprice: %s"
         self.twitter.update_status(media_ids=medias,
                                    status=template % status)
         print template % status
@@ -99,6 +99,7 @@ class Presenter(object):
                     ' %s: AR$ %.f (RMSE: AR$ %.f)') %
                    (m_dt.strftime('%d-%m-%Y'), price, rmse),
                    filename)
+        self.tweet('El código puede ser descargado desde https://github.com/limiear/soyprice.', [])
 
     def demonstrate(self):
         cache = db.open()
