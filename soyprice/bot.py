@@ -44,10 +44,10 @@ class Presenter(object):
         time.sleep(10)
         medias = map(lambda i: self.upload_media(i)['media_id'], images)
         template = "soyprice: %s"
-        args = {"status": template % status}
-        if medias:
-            args['media_ids'] = medias
-        self.twitter.update_status(*args)
+        if not medias:
+            medias = None
+        self.twitter.update_status(medias_id=medias,
+                                   status=template % status)
         print template % status
 
     @twython
