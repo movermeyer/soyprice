@@ -42,11 +42,12 @@ class Presenter(object):
 
     def tweet(self, status, images):
         time.sleep(10)
-        medias = map(lambda i: self.upload_media(i)['media_id'], images)
         template = "soyprice: %s"
-        if not medias:
+        print images
+        if not images:
             self.twitter.update_status(status=template % status)
         else:
+            medias = map(lambda i: self.upload_media(i)['media_id'], images)
             self.twitter.update_status(medias_id=medias,
                                        status=template % status)
         print template % status
