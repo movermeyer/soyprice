@@ -10,6 +10,7 @@ from grapher import draw
 import time
 from twitter_keys import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
 from model import SanMartin, Chicago, BlueDollar, BCR
+from StringIO import StringIO
 
 
 def twython(func):
@@ -37,20 +38,23 @@ class Presenter(object):
         self.day = get_next_workable_day(self.date_list[-1])
 
     def upload_media(self, image):
-        photo = open(image, 'rb')
-        return self.twitter.upload_media(media=photo)
+        with open(image, 'rb') as photo:
+            result = StringIO(photo.read())
+        return result
 
     def tweet(self, status, images):
         time.sleep(10)
         template = "soyprice: %s"
-        print images
         if not images:
             self.twitter.update_status(status=template % status)
         else:
-            medias = map(lambda i: self.upload_media(i)['media_id'], images)
+            medias = map(lambda i: self.upload_media(i), images)
+            self.twitter.post('/statuses/update_with_media',
+                              params={'status': template % status,
+                              'media': medias[0]})
             self.twitter.update_status(medias_id=medias,
                                        status=template % status)
-        print template % status
+        print template % status, len(template % status)
 
     @twython
     def dollar_showcase(self, cache):
