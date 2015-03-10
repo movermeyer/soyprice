@@ -52,8 +52,6 @@ class Presenter(object):
             self.twitter.post('/statuses/update_with_media',
                               params={'status': template % status,
                               'media': medias[0]})
-            self.twitter.update_status(medias_id=medias,
-                                       status=template % status)
         print template % status, len(template % status)
 
     @twython
