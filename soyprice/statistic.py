@@ -152,4 +152,4 @@ class VariableRegression(Regression):
         X /= X.std(0)
         Y /= Y.std(0)
         # Compute mean product
-        return np.mean(X*Y)
+        return (np.mean(X*Y) ** 2) * 100
