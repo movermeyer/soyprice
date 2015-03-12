@@ -26,8 +26,11 @@ class Graph(object):
         self.sp.yaxis.label.set_text(reference)
         self.sp.yaxis.label.set_size(10)
         self.sp.yaxis.tick_right()
-        pl.xticks([], 0, endpoint=True)
         self.sp.set_xlabel(x_label, fontsize=10)
+        self.sp.xaxis.set_label_coords(0.5, 0.1)
+
+    def draw_xticks(self, x):
+        pl.xticks([], 0, endpoint=True)
 
     def draw_rmse(self, x, weights, rmse):
         w_s = lambda w: 1/(w if w > 0 else 0.001)
@@ -46,6 +49,8 @@ class Graph(object):
         x, y, fix, weights, rmse, next_x, next_y = regression.resume()
         self.draw_title(x, y, next_x, next_y, regression.description)
         self.draw_data(x, y, regression.reference, regression.x_label)
+        if not regression.should_show_xticks:
+            self.draw_xticks(x)
         self.draw_rmse(x, zip(fix, weights), rmse)
         self.draw_estimated(x, fix, next_x, next_y)
 

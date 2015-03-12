@@ -17,6 +17,7 @@ class Regression(object):
         self.date_list = date_list
         self.day = day
         self.variables = variables
+        self.should_show_xticks = False
 
     @property
     def future_x(self):
@@ -115,6 +116,7 @@ class VariableRegression(Regression):
 
     @property
     def data(self):
+        self.should_show_xticks = True
         if not hasattr(self, '_data'):
             get_var = lambda vi: dict(zip(*(self.get_data(
                 self.variables[vi])[:-1])))
