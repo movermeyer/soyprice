@@ -99,11 +99,12 @@ class Presenter(object):
         filename = draw(regression, 'graph_soy_related.png')
         price = fx(regression.future_x)
         x, y, dt = regression.data
+        pearson = regression.pearson_correlation()
         m_dt = max(dt)
         m_dt = int_to_date(m_dt) if isinstance(m_dt, int) else m_dt
         self.tweet(('Correlación Soja Chicago con pto. San Martín hasta el'
-                    ' %s: AR$ %.f (RMSE: AR$ %.f)') %
-                   (m_dt.strftime('%d-%m-%Y'), price, rmse),
+                    ' %s: AR$ %.f (RMSE: AR$ %.f) Pearson: %.2f') %
+                   (m_dt.strftime('%d-%m-%Y'), price, rmse, pearson),
                    filename)
         self.tweet('El código puede ser descargado desde https://github.com/limiear/soyprice.', [])
 

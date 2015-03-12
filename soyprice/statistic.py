@@ -1,5 +1,6 @@
 from numpy import polyfit, poly1d, sqrt
 from datetime import datetime
+import numpy as np
 
 
 def date_to_int(dt):
@@ -139,3 +140,16 @@ class VariableRegression(Regression):
     def x_label(self):
         x, y, dt = self.data
         return "%i valores de muestra" % len(x)
+
+    def pearson_correlation(self):
+        x, y, dt = self.data
+        X, Y = np.array(x), np.array(y)
+        ''' Compute Pearson Correlation Coefficient. '''
+        # Normalise X and Y
+        X -= X.mean(0)
+        Y -= Y.mean(0)
+        # Standardise X and Y
+        X /= X.std(0)
+        Y /= Y.std(0)
+        # Compute mean product
+        return np.mean(X*Y)
