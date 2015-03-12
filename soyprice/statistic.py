@@ -42,7 +42,7 @@ class Regression(object):
     def pattern(self):
         x, y, dt = self.data
         weights = self.weights(x)
-        fit = polyfit(x, y, self.degree, w=weights)
+        fit = polyfit(x, y, self.degree, w=weights, full=True)[0]
         fx = poly1d(fit)
         estimated = map(fx, x)
         rmse = sqrt(sum(map(lambda (e, x, w): w * ((e - x) ** 2),
@@ -84,8 +84,9 @@ class TimeRegression(Regression):
 
     def weights(self, x):
         if len(x) <= 1:
-            return [1]
-        return map(lambda xi: (xi - x[0])/float(x[-1] - x[0]), x)
+            return [1.]
+        p = lambda xi: (xi - x[0])/float(x[-1] - x[0])
+        return map(lambda xi: p(xi) if p(xi) > 0.15 else 0.15, x)
 
     def check(self):
         if len(self.variables) is not 1:
