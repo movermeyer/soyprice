@@ -31,7 +31,7 @@ class TestTimeRegression(unittest.TestCase):
     def test_weights(self):
         x, y, dt = self.regression.get_data(self.regression.variables[0])
         tests = zip(self.regression.weights(x),
-                    [-0.0, 0.1666, 0.6666, 0.8333, 1.0])
+                    [0.15, 0.1666, 0.6666, 0.8333, 1.0])
         map(lambda (res, ref): self.assertAlmostEqual(res, ref, 3), tests)
         self.assertEquals(self.regression.weights(x[0:1]), [1])
 
