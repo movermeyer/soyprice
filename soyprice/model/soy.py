@@ -46,8 +46,9 @@ class BCR(Soy):
         text = map(lambda r: [c.text for c in r.select('td')], rows)
         to_date = lambda d: datetime.datetime.strptime(d, '%d/%m/%Y').date()
         dts = map(to_date, filter(lambda r: 'Fixing date' in r, text)[0][2:])
-        prices = map(float, filter(lambda r: 'soybean' in r, text)[0][2:])
-        prices = dict(zip(dts, prices))
+        prices = map(lambda v: float(v) if v.isdigit() else None,
+                     filter(lambda r: 'soybean' in r, text)[0][2:])
+        prices = dict(filter(lambda p: p[1], zip(dts, prices)))
         prices = map(lambda dt: prices[dt],
                      filter(lambda dt: dt in prices, date_list))
         return prices
