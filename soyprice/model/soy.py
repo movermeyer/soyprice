@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as beautifulsoup
 from itertools import chain
 import re
 import datetime
-from translate import Translator
+from goslate import Goslate
 
 
 class Soy(Variable):
@@ -60,7 +60,7 @@ class Afascl(Soy):
     def __init__(self, cache):
         super(Afascl, self).__init__(cache)
         self.name += '/afascl'
-        self.translator = Translator(from_lang="es", to_lang="en")
+        self.translator = Goslate()
 
     def obtain_prices(self, page, place):
         rows = page.select('tr')
@@ -87,7 +87,7 @@ class Afascl(Soy):
         url = 'http://afascl.coop/afadiario/home/diario.php'
         page = get_page(url)
         diary = page.select('.preciosdiario span')[0].text.split('\r\n')[0]
-        diary = self.translator.translate(diary.lower())
+        diary = self.translator.translate(diary.lower(), "es", "en")
         diary = datetime.datetime.strptime(diary, '%A %B %d, %Y').date()
         if (diary != date):
             date_str = date.strftime('%d-%m-%Y')
