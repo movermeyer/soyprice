@@ -87,7 +87,7 @@ class Afascl(Soy):
         url = 'http://afascl.coop/afadiario/home/diario.php'
         page = get_page(url)
         diary = page.select('.preciosdiario span')[0].text.split('\r\n')[0]
-        diary = self.translator.translate(diary.lower(), "es", "en")
+        diary = self.translator.translate(diary.lower(), "en", "es")
         diary = datetime.datetime.strptime(diary, '%A %B %d, %Y').date()
         if (diary != date):
             date_str = date.strftime('%d-%m-%Y')
