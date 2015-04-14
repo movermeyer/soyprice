@@ -15,6 +15,19 @@ ubuntu:
 	@ sudo apt-get -y install zlibc libssl1.0.0 libbz2-dev libxslt1-dev libxml2-dev python-gevent python-virtualenv python-dev libfreetype6-dev libpng12-dev
 	@ echo "[ assume       ] ubuntu distribution"
 
+swapon:
+	@ echo "[ creating     ] swap file of 512 MB"
+	@ dd if=/dev/zero of=/swapfile bs=1k count=512k
+	@ chown root:root /swapfile
+	@ chmod 0600 /swapfile
+	@ mkswap /swapfile
+	@ swapon /swapfile
+
+swapoff: bin/activate
+	@ echo "[ destroing    ] swap file of 512 MB"
+	@ swapoff /swapfile
+	@ rm /swapfile
+
 bin/activate: requirements.txt
 	@ echo "[ using        ] $(PYTHONPATH)"
 	@ echo "[ installing   ] $(VIRTUALENV)"
@@ -23,6 +36,9 @@ bin/activate: requirements.txt
 	@ ($(PYTHONLIBS) $(VIRTUALENV) --python=$(PYTHONPATH) --no-site-packages . 2>&1) >> tracking.log
 	@ echo "[ installing   ] $(PIP) inside $(VIRTUALENV)"
 	@ ($(SOURCE_ACTIVATE) $(EASYINSTALL) pip 2>&1) >> tracking.log
+	@ ($(SOURCE_ACTIVATE) $(PIP) install pip --upgrade 2>&1) >> tracking.log
+	@ ($(SOURCE_ACTIVATE) $(PIP) install distribute --upgrade 2>&1) >> tracking.log
+	@ ($(SOURCE_ACTIVATE) $(PIP) install setuptools --upgrade 2>&1) >> tracking.log
 	@ echo "[ installing   ] $(PIP) requirements"
 	@ $(SOURCE_ACTIVATE) $(PIP) install -e  .
 	@ $(SOURCE_ACTIVATE) $(PIP) install --default-timeout=100 -r requirements.development.txt 2>&1 | grep Downloading
@@ -30,6 +46,8 @@ bin/activate: requirements.txt
 
 deploy: bin/activate
 	@ echo "[ deployed     ] the system was completly deployed"
+
+rpi-deploy: swapon deploy swapoff
 
 show-version:
 	@ $(SOURCE_ACTIVATE) $(PYTHON) --version
