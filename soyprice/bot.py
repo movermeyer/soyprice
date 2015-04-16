@@ -43,8 +43,9 @@ class Presenter(object):
         return result
 
     def tweet(self, status, images):
-        time.sleep(10)
-        template = "soyprice: %s"
+        # time.sleep(10)
+        template = "%s #soyprice"
+        """
         if not images:
             self.twitter.update_status(status=template % status)
         else:
@@ -52,6 +53,7 @@ class Presenter(object):
             self.twitter.post('/statuses/update_with_media',
                               params={'status': template % status,
                               'media': medias[0]})
+                              """
         print template % status, len(template % status)
 
     @twython
