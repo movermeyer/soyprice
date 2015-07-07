@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from setuptools import setup, find_packages
+from distutils.core import setup
+from setuptools.command import easy_install
 import os
 import subprocess
-from setuptools.command import easy_install
+
 
 def parse_requirements(filename):
     return list(filter(lambda line: (line.strip())[0] != '#',
@@ -27,8 +28,8 @@ def calculate_version():
     return version_git
 
 
-requirements = parse_requirements('requirements.txt')
-version_git = calculate_version()
+REQUIREMENTS = parse_requirements('requirements.txt')
+VERSION_GIT = calculate_version()
 
 
 def get_long_description():
@@ -50,17 +51,17 @@ def get_long_description():
 
 setup(
     name='soyprice',
-    version=version_git,
+    version=VERSION_GIT,
     author='Limie',
     author_email='limie.ar@gmail.com',
-    packages=find_packages(),
+    packages=['soyprice', 'soyprice/model'],
     url='https://github.com/limiear/soyprice',
     license='GNU/GPLv3',
     description=('A python library to show the soy price in a twitter '
                  'timeline.'),
     long_description=get_long_description(),
     zip_safe=True,
-    install_requires=requirements,
+    install_requires=REQUIREMENTS,
     classifiers=[
         "Intended Audience :: Science/Research",
         "Programming Language :: Python",
