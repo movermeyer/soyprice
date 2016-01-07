@@ -28,10 +28,12 @@ swapoff: bin/activate
 	@ swapoff /swapfile
 	@ rm /swapfile
 
+virtualenv:
+	@ echo "[ installing   ] $(VIRTUALENV)"
+	@ sudo $(FIRST_EASYINSTALL) virtualenv
+
 bin/activate: requirements.txt
 	@ echo "[ using        ] $(PYTHONPATH)"
-	@ echo "[ installing   ] $(VIRTUALENV)"
-	@ (sudo $(FIRST_EASYINSTALL) virtualenv 2>&1) >> tracking.log
 	@ echo "[ creating     ] $(VIRTUALENV) with no site packages"
 	@ ($(PYTHONLIBS) $(VIRTUALENV) --python=$(PYTHONPATH) --no-site-packages . 2>&1) >> tracking.log
 	@ echo "[ installing   ] $(PIP) inside $(VIRTUALENV)"

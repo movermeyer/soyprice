@@ -18,11 +18,11 @@ If you want to use this script on any GNU/Linux or OSX system you just need to e
 
 If you want to improve this script, you should download the [github repository](https://github.com/limiear/soyprice) and execute:
 
-    $ make deploy
+    $ make virtualenv deploy
 
 On Ubuntu Desktop there are some other libraries not installed by default (zlibc libssl libbz2-dev libxml2-dev libxslt1-dev python-gevent libpng12-dev) which may need to be installed to use these script. Use the next command to automate the installation of the additional C libraries:
 
-    $ make ubuntu deploy
+    $ make ubuntu virtualenv deploy
 
 
 Testing
