@@ -6,6 +6,7 @@ __pycache__/
 # C extensions
 *.so
 *.*~
+soyprice/twitter_keys.py
 
 # Distribution / packaging
 .Python

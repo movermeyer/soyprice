@@ -77,7 +77,7 @@ class Afascl(Soy):
         get_price = lambda row: texts(row, 'th') + texts(row, 'td')
         prices = map(get_price, rows)
         soy_with_download = lambda x: ('soja' in x[0]
-                                       and 'con descarga' in x[4]
+                                       and 'sin descarga' in x[4].lower()
                                        and x[2] > 0 and place in x[1])
         return map(lambda x: x[2],
                    filter(soy_with_download, prices))
