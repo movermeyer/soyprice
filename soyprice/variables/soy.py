@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 import re
 
 
-def load_dataset(filename, variables):
+def load_bcr_dataset(filename, variables):
     with open(filename, "r") as f:
         data = beautifulsoup(f.read(), "xml")
         details = data.findAll("Detail")
@@ -27,7 +27,7 @@ def load_dataset(filename, variables):
 
 @app.run_every("day", "10:55")
 def update_soy_bcr():
-    bcr_prices = {
+    bcr_variables = {
         u"Soja": {
             "name": u"soy/bcr",
             "description": u"Soja de la Bolsa de Comercio de Rosario (Arg)",
@@ -54,11 +54,11 @@ def update_soy_bcr():
             "reference": u"ARS/tn"
         }
     }
-    variables = {k: get_var(**v) for k, v in bcr_prices.items()}
+    variables = {k: get_var(**v) for k, v in bcr_variables.items()}
     is_empty = variables["Soja"].changes.count() == 0
     if is_empty:
         datasets = glob('data/bcr/*.prices.xml')
-        load_data = partial(load_dataset, variables=variables)
+        load_data = partial(load_bcr_dataset, variables=variables)
         map(load_data, datasets)
     url = 'http://www.bcr.com.ar/Pages/Granos/Cotizaciones/default.aspx'
     page = beautifulsoup(request(url))
@@ -80,4 +80,8 @@ def update_soy_bcr():
         db.session.add(var)
 
 
-update_soy_bcr()
+@app.run_every("day", "19:50")
+def update_soy_afascl():
+
+
+update_soy_afascl()
