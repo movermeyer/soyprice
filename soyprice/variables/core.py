@@ -18,3 +18,7 @@ def get_var(**kwargs):
 
 def request(url):
     return requests.get(url).text
+
+
+def get_page(url):
+    return beautifulsoup(request(url))

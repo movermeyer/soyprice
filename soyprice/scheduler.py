@@ -1,11 +1,13 @@
 import schedule
 from threading import Thread
+from multiprocessing import Process
 import time
 import os
 import traceback
 
 
 def run_schedule():
+    import variables
     while 1:
         schedule.run_pending()
         time.sleep(1)
@@ -30,6 +32,5 @@ def run_every(moment="day", hour="00:00"):
 def init_app(app):
     app.run_every = run_every
     if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        import variables
         t = Thread(target=run_schedule)
         t.start()
