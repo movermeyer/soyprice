@@ -147,11 +147,13 @@ def update_soy_afascl():
     dt = last_reg.moment if last_reg else begin
     get_prices = partial(get_afascl_prices, variables=variables)
     while dt <= date.today():
-        for variable, price in get_prices(dt).items():
-            ch = Change(value=price, moment=dt)
-            db.session.add(ch)
-            variable.changes.append(ch)
+        # 0: mon ... 4:fri 5:sat 6: sun
+        if dt.weekday() <= 4:
+            for variable, price in get_prices(dt).items():
+                ch = Change(value=price, moment=dt)
+                db.session.add(ch)
+                variable.changes.append(ch)
+            db.session.commit()
         dt = dt + timedelta(days=1)
-        db.session.commit()
     list(map(db.session.add, variables.values()))
     db.session.commit()
