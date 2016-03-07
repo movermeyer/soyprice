@@ -7,12 +7,12 @@ def update_dollars_ratios():
     url = ("http://www.ambito.com/economia/mercados/monedas/dolar/"
            "x_dolar_get_grafico.asp?ric={:}&tipo={:}")
     dollar_vars = {
-        "ARSSCBCRA": {
+        "ARSB=": {
             "name": "dollar/blue",
             "description": "Dolar blue en Argentina",
             "reference": "ARS/USD"
         },
-        "ARSB": {
+        "ARSSCBCRA": {
             "name": "dollar/bcra",
             "description": "Dolar del Banco Central de la Republica Argentina",
             "reference": "ARS/USD"

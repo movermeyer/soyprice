@@ -84,6 +84,10 @@ def update_soy_bcr():
 
 
 def get_afascl_prices(dt, variables):
+    if dt.weekday() > 4:
+        # 0: mon ... 4:fri 5:sat 6: sun
+        print "Detected {:} as a weekend day.".format(str(dt))
+        return {}
     if dt >= date(2014, 12, 1):
         url = "http://afascl.coop/afadiario/home/diario_xml.php"
         dt_str = dt.strftime("%d/%m/%Y")
@@ -147,13 +151,11 @@ def update_soy_afascl():
     dt = last_reg.moment if last_reg else begin
     get_prices = partial(get_afascl_prices, variables=variables)
     while dt <= date.today():
-        # 0: mon ... 4:fri 5:sat 6: sun
-        if dt.weekday() <= 4:
-            for variable, price in get_prices(dt).items():
-                ch = Change(value=price, moment=dt)
-                db.session.add(ch)
-                variable.changes.append(ch)
-            db.session.commit()
-        dt = dt + timedelta(days=1)
+        for variable, price in get_prices(dt).items():
+            ch = Change(value=price, moment=dt)
+            db.session.add(ch)
+            variable.changes.append(ch)
+        db.session.commit()
+        dt += timedelta(days=1)
     list(map(db.session.add, variables.values()))
     db.session.commit()
