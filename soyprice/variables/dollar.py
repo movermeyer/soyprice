@@ -2,7 +2,7 @@ from variables.core import app, db, get_var, request, Change
 from datetime import datetime
 
 
-@app.run_every("day", "10:50")
+@app.run_every("day", "10:30")
 def update_dollars_ratios():
     url = ("http://www.ambito.com/economia/mercados/monedas/dolar/"
            "x_dolar_get_grafico.asp?ric={:}&tipo={:}")

@@ -6,7 +6,6 @@ from glob import glob
 from decimal import Decimal, InvalidOperation
 import re
 import requests
-import time
 
 
 def load_bcr_dataset(filename, variables):
@@ -21,8 +20,8 @@ def load_bcr_dataset(filename, variables):
                 ch = Change(value=price, moment=moment)
                 variables[product].changes.append(ch)
                 db.session.add(ch)
-            except InvalidOperation:
-                pass
+            except InvalidOperation, e:
+                print e
         list(map(db.session.add, variables.values()))
         db.session.commit()
 
@@ -116,6 +115,8 @@ def get_afascl_prices(dt, variables):
     return dict(results)
 
 
+# dt = datetime.now() + timedelta(minutes=1)
+# @app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "11:50")
 def update_soy_afascl():
     afascl_variables = {
