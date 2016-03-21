@@ -30,7 +30,7 @@ is_float = lambda v: re.match("^\d+?\.\d+?$", v)
 
 
 @app.run_every("day", "10:55")
-def update_soy_bcr():
+def update_crops_bcr():
     bcr_variables = {
         u"Soja": {
             "name": u"soy/bcr",
@@ -118,7 +118,7 @@ def get_afascl_prices(dt, variables):
 #dt = datetime.now() + timedelta(minutes=1)
 #@app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "11:50")
-def update_soy_afascl():
+def update_crops_afascl():
     afascl_variables = {
         u"Soja": {
             "name": u"soy/afascl",
