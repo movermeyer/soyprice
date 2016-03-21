@@ -115,8 +115,8 @@ def get_afascl_prices(dt, variables):
     return dict(results)
 
 
-# dt = datetime.now() + timedelta(minutes=1)
-# @app.run_every("day", dt.strftime("%H:%M"))
+#dt = datetime.now() + timedelta(minutes=1)
+#@app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "11:50")
 def update_soy_afascl():
     afascl_variables = {

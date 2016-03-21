@@ -8,14 +8,14 @@ def update_dollars_ratios():
            "x_dolar_get_grafico.asp?ric={:}&tipo={:}")
     dollar_vars = {
         "ARSB=": {
-            "name": "dollar/blue",
-            "description": "Dolar blue en Argentina",
-            "reference": "ARS/USD"
+            "name": u"dollar/blue",
+            "description": u"Dolar blue en Argentina",
+            "reference": u"ARS/USD"
         },
         "ARSSCBCRA": {
-            "name": "dollar/bcra",
-            "description": "Dolar del Banco Central de la Republica Argentina",
-            "reference": "ARS/USD"
+            "name": u"dollar/bcra",
+            "description": u"Dolar del Banco Central de la Republica Argentina",
+            "reference": u"ARS/USD"
         }
     }
     for k, v in dollar_vars.items():
@@ -27,7 +27,7 @@ def update_dollars_ratios():
             eval(request(composed_url)))
         dts = map(lambda ch: ch.moment, variable.changes.all())
         if dts:
-            dollars = filter(lambda (d, v): d[0] not in dts, dollars)
+            dollars = filter(lambda d: d[0] not in dts, dollars)
         for d, v in dollars:
             ch = Change(value=v, moment=d)
             variable.changes.append(ch)
