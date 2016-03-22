@@ -161,8 +161,9 @@ def update_crops_afascl():
     db.session.commit()
 
 
-dt = datetime.now() + timedelta(minutes=1)
-@app.run_every("day", dt.strftime("%H:%M"))
+#dt = datetime.now() + timedelta(minutes=1)
+#@app.run_every("day", dt.strftime("%H:%M"))
+@app.run_every("day", "17:00")
 def update_crops_chicago():
     chicago_variables = {
         u"soybean": {
