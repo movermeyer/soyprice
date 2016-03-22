@@ -6,6 +6,7 @@ from glob import glob
 from decimal import Decimal, InvalidOperation
 import re
 import requests
+import json
 
 
 def load_bcr_dataset(filename, variables):
@@ -115,8 +116,6 @@ def get_afascl_prices(dt, variables):
     return dict(results)
 
 
-#dt = datetime.now() + timedelta(minutes=1)
-#@app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "11:50")
 def update_crops_afascl():
     afascl_variables = {
@@ -159,4 +158,34 @@ def update_crops_afascl():
         db.session.commit()
         dt += timedelta(days=1)
     list(map(db.session.add, variables.values()))
+    db.session.commit()
+
+
+dt = datetime.now() + timedelta(minutes=1)
+@app.run_every("day", dt.strftime("%H:%M"))
+def update_crops_chicago():
+    chicago_variables = {
+        u"soybean": {
+            "name": u"soy/chicago",
+            "description": u"Soja de la Bolsa de Chicago (USA)",
+            "reference": u"USD/bushel"
+        }
+    }
+    variables = {k: get_var(**v) for k, v in chicago_variables.items()}
+    url = "http://api.ieconomics.com/ie5/?s=s%201:com&span=1y&_="
+    data = get_page(url).select('p')[0].text
+    data = json.loads(data)[0]
+    data = data['series'][0]['serie']['data']
+    to_tuple = (lambda r:
+                (datetime.strptime(r['x_dt'], "%Y-%m-%dT%H:%M:%S.%fZ").date(),
+                 Decimal(r['close'])))
+    prices = map(to_tuple, data)
+    variable = variables[u"soybean"]
+    last_dt = variable.changes.order_by('moment desc').first()
+    last_dt = last_dt if last_dt else prices[0][0] - timedelta(days=32)
+    new_prices = filter(lambda r: r[0] > last_dt, prices)
+    for dt, price in new_prices:
+        ch = Change(value=price, moment=dt)
+        db.session.add(ch)
+        variable.changes.append(ch)
     db.session.commit()
