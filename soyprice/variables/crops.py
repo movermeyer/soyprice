@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from variables.core import app, db, get_var, get_page, beautifulsoup, Change
+from variables.core import (app, db, get_var, get_page, requests,
+                            beautifulsoup, Change)
 from datetime import datetime, date, timedelta
 from functools import partial
 from glob import glob
 from decimal import Decimal, InvalidOperation
 import re
-import requests
 import json
 
 
@@ -75,7 +75,7 @@ def update_crops_bcr():
         last_reg = var.changes.order_by("moment desc").first()
         prices = map(lambda v: float(v) if is_float(v) else None, line[2:])
         prices = zip(dts, prices)
-        for moment, price in filter(lambda r: r[1] and r[1] > last_reg,
+        for moment, price in filter(lambda r: r[1] and r[1] > last_reg.moment,
                                     prices):
             ch = Change(value=price, moment=moment)
             db.session.add(ch)
