@@ -9,7 +9,7 @@ import model.database as db
 from grapher import draw
 import time
 from twitter_keys import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
-from model import SanMartin, Chicago, BlueDollar, BCR
+from model.core import Variable
 from StringIO import StringIO
 
 
@@ -58,7 +58,7 @@ class Presenter(object):
 
     @twython
     def dollar_showcase(self, cache):
-        dollars = BlueDollar(cache)
+        dollars = Variable('dollar/blue')
         regression = TimeRegression(self.date_list, self.day, [dollars])
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
@@ -70,9 +70,9 @@ class Presenter(object):
     @twython
     def soy_showcase(self, cache):
         # sanmartin
-        sanmartin = SanMartin(cache)
-        rosario = BCR(cache)
-        chicago = Chicago(cache)
+        sanmartin = Variable('soy/afascl')
+        rosario = Variable('soy/bcr')
+        chicago = Variable('soy/chicago')
         # foorecast soy sanmartin
         regression = TimeRegression(self.date_list, self.day, [rosario])
         fx, _, rmse = regression.pattern()

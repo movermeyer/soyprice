@@ -1,5 +1,4 @@
 import datetime
-from model import SanMartin, Chicago, BlueDollar
 
 
 def get_days(base, defined_range=range(0,15)):

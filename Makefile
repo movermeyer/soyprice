@@ -58,7 +58,8 @@ test:
 	@ echo "[ tested       ] the system was completly tested"
 
 run:
-	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/bot.py
+	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/run.py &
+	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/bots/presenter_bot.py
 
 shell:
 	@ $(SOURCE_ACTIVATE) ipython
