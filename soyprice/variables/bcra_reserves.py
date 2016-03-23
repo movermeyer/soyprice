@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 
-#@app.run_every("day", "10:30")
-dt = datetime.now() + timedelta(minutes=1)
-@app.run_every("day", dt.strftime("%H:%M"))
+#dt = datetime.now() + timedelta(minutes=1)
+#@app.run_every("day", dt.strftime("%H:%M"))
+@app.run_every("day", "20:30")
 def update_bcra_reserves():
     url = "http://www.bcra.gov.ar/Estadisticas/estprv010001.asp"
     bcra_vars = {
