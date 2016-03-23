@@ -1,16 +1,14 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from twython import Twython, TwythonError
-import datetime
 from scraper import get_days, get_next_workable_day
 from statistic import TimeRegression, VariableRegression, int_to_date
-import model.database as db
 from grapher import draw
 import time
 from twitter_keys import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
-from model.core import Variable
+from core import Variable
 from StringIO import StringIO
+from variables.core import app
+from datetime import datetime, timedelta
 
 
 def twython(func):
@@ -32,7 +30,7 @@ class Presenter(object):
             OAUTH_TOKEN_SECRET
         )
         amount = 15
-        self.date_list = get_days(datetime.datetime.today(),
+        self.date_list = get_days(datetime.today(),
                                   range(0, amount))
         self.date_list.reverse()
         self.day = get_next_workable_day(self.date_list[-1])
@@ -57,18 +55,19 @@ class Presenter(object):
         print template % status, len(template % status)
 
     @twython
-    def dollar_showcase(self, cache):
+    def dollar_showcase(self):
         dollars = Variable('dollar/blue')
         regression = TimeRegression(self.date_list, self.day, [dollars])
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_dollar.png')
+        print self.day, price, rmse, filename
         self.tweet(('Estimación Dollar Blue para el %s: AR$ %.2f '
                     '(RMSE: AR$ %.2f)') %
                    (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
 
     @twython
-    def soy_showcase(self, cache):
+    def soy_showcase(self):
         # sanmartin
         sanmartin = Variable('soy/afascl')
         rosario = Variable('soy/bcr')
@@ -111,11 +110,12 @@ class Presenter(object):
         self.tweet('El código puede ser descargado desde https://github.com/limiear/soyprice.', [])
 
     def demonstrate(self):
-        cache = db.open()
-        self.dollar_showcase(cache)
-        self.soy_showcase(cache)
-        db.close(cache)
+        self.dollar_showcase()
+        self.soy_showcase()
 
 
-presenter = Presenter()
-presenter.demonstrate()
+dt = datetime.now() + timedelta(minutes=2)
+@app.run_every("day", dt.strftime("%H:%M"))
+def run():
+    presenter = Presenter()
+    presenter.demonstrate()

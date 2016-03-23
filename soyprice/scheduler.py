@@ -8,6 +8,7 @@ import traceback
 
 def run_schedule():
     import variables
+    import bots
     while 1:
         schedule.run_pending()
         time.sleep(1)
