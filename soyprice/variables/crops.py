@@ -4,7 +4,6 @@ from variables.core import (app, db, get_var, get_page, requests,
 from datetime import datetime, date, timedelta
 from functools import partial
 from glob import glob
-from decimal import Decimal, InvalidOperation
 import re
 import json
 
@@ -17,11 +16,11 @@ def load_bcr_dataset(filename, variables):
             product = d.attrs['Producto']
             moment = datetime.strptime(d.attrs['fchOper'], "%d/%m/%Y").date()
             try:
-                price = Decimal(d.attrs['PrcFij'][2:])
+                price = float(d.attrs['PrcFij'][2:])
                 ch = Change(value=price, moment=moment)
                 variables[product].changes.append(ch)
                 db.session.add(ch)
-            except InvalidOperation, e:
+            except ValueError, e:
                 print e
         list(map(db.session.add, variables.values()))
         db.session.commit()
@@ -30,6 +29,8 @@ def load_bcr_dataset(filename, variables):
 is_float = lambda v: re.match("^\d+?\.\d+?$", v)
 
 
+# dt = datetime.now() + timedelta(minutes=1)
+# @app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "10:55")
 def update_crops_bcr():
     bcr_variables = {
@@ -72,10 +73,10 @@ def update_crops_bcr():
     dts = map(to_date, text[0][2:])
     for line in text[2:]:
         var = variables[line[0]]
-        last_reg = var.changes.order_by("moment desc").first()
+        last_reg = var.changes.order_by(Change.moment.desc()).first()
         prices = map(lambda v: float(v) if is_float(v) else None, line[2:])
         prices = zip(dts, prices)
-        for moment, price in filter(lambda r: r[1] and r[1] > last_reg.moment,
+        for moment, price in filter(lambda r: r[1] and r[0] > last_reg.moment,
                                     prices):
             ch = Change(value=price, moment=moment)
             db.session.add(ch)
@@ -147,9 +148,10 @@ def update_crops_afascl():
     }
     variables = {k: get_var(**v) for k, v in afascl_variables.items()}
     begin = date(2007, 10, 1)
-    last_reg = variables['Soja'].changes.order_by("moment desc").first()
+    last_reg = variables['Soja'].changes.order_by(Change.moment.desc()).first()
     dt = last_reg.moment if last_reg else begin
     get_prices = partial(get_afascl_prices, variables=variables)
+    dt += timedelta(days=1)
     while dt <= date.today():
         for variable, price in get_prices(dt).items():
             ch = Change(value=price, moment=dt)
@@ -161,8 +163,6 @@ def update_crops_afascl():
     db.session.commit()
 
 
-#dt = datetime.now() + timedelta(minutes=1)
-#@app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "17:00")
 def update_crops_chicago():
     chicago_variables = {
@@ -179,11 +179,11 @@ def update_crops_chicago():
     data = data['series'][0]['serie']['data']
     to_tuple = (lambda r:
                 (datetime.strptime(r['x_dt'], "%Y-%m-%dT%H:%M:%S.%fZ").date(),
-                 Decimal(r['close'])))
+                 float(r['close'])))
     prices = map(to_tuple, data)
     variable = variables[u"soybean"]
-    last_dt = variable.changes.order_by('moment desc').first()
-    last_dt = last_dt if last_dt else prices[0][0] - timedelta(days=32)
+    last_dt = variable.changes.order_by(Change.moment.desc()).first()
+    last_dt = last_dt.moment if last_dt else prices[0][0] - timedelta(days=32)
     new_prices = filter(lambda r: r[0] > last_dt, prices)
     for dt, price in new_prices:
         ch = Change(value=price, moment=dt)

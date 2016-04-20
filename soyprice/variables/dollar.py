@@ -14,7 +14,8 @@ def update_dollars_ratios():
         },
         "ARSSCBCRA": {
             "name": u"dollar/bcra",
-            "description": u"Dolar del Banco Central de la Republica Argentina",
+            "description": (u"Dolar del Banco Central de la Republica "
+                            "Argentina"),
             "reference": u"ARS/USD"
         }
     }

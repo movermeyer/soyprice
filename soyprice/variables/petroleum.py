@@ -2,9 +2,9 @@ from variables.core import app, db, get_var, request, Change
 from datetime import datetime, timedelta
 
 
-#@app.run_every("day", "12:30")
-dt = datetime.now() + timedelta(minutes=1)
-@app.run_every("day", dt.strftime("%H:%M"))
+# dt = datetime.now() + timedelta(minutes=1)
+# @app.run_every("day", dt.strftime("%H:%M"))
+@app.run_every("day", "12:30")
 def update_petroleum_wti_barrel_ratios():
     url = ("http://www.ambito.com/economia/mercados/petroleo/"
            "x_petroleo_get_grafico.asp?ric=1&"
@@ -12,15 +12,15 @@ def update_petroleum_wti_barrel_ratios():
     begin = datetime(1984, 4, 12)
     end = datetime.now()
     petroleum_vars = {
-        "PETROLEUM": {
-            "name": "petroleum/wti",
-            "description": "Petroleo West Texas Intermediate",
-            "reference": "USD/barrel"
+        u"PETROLEUM": {
+            u"name": u"petroleum/wti",
+            u"description": u"Petroleo West Texas Intermediate",
+            u"reference": u"USD/barrel"
         }
     }
     for k, v in petroleum_vars.items():
         variable = get_var(**v)
-        begin = (variable.changes.order_by("moment desc").first().moment
+        begin = (variable.changes.order_by(Change.moment.desc()).first().moment
                  if variable.changes.count() else begin)
         p = lambda dt: dt.strftime("%d/%m/%Y")
         composed_url = url.format(p(begin), p(end))

@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 from variables.core import app, db, get_var, requests, beautifulsoup, Change
 from datetime import datetime, timedelta
-from decimal import Decimal
 
 
-#dt = datetime.now() + timedelta(minutes=1)
-#@app.run_every("day", dt.strftime("%H:%M"))
+# dt = datetime.now() + timedelta(minutes=1)
+# @app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "20:30")
 def update_bcra_reserves():
     url = "http://www.bcra.gov.ar/Estadisticas/estprv010001.asp"
     bcra_vars = {
-        "reserve": {
-            "name": u"reserve/bcra",
-            "description": u"Reservas en dolares del Banco Central de la República Argentina",
-            "reference": u"USD"
+        u"reserve": {
+            u"name": u"reserve/bcra",
+            u"description": u"Reservas en dolares del Banco Central de la República Argentina",
+            u"reference": u"USD"
         }
     }
     variables = {k: get_var(**v) for k, v in bcra_vars.items()}
@@ -35,9 +34,9 @@ def update_bcra_reserves():
     data = data[1:]
     reserves = map(lambda d:
                    (datetime.strptime(d[0], "%d/%m/%Y").date(),
-                    Decimal(d[1]) * 1000000),
+                    float(d[1]) * 1000000),
                    data)
-    last_reg = variable.changes.order_by("moment desc").first()
+    last_reg = variable.changes.order_by(Change.moment.desc()).first()
     last_dt = last_reg.moment if last_reg else first_date.date()
     reserves = filter(lambda r: r[0] > last_dt, reserves)
     for d, v in reserves:
