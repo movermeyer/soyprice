@@ -61,10 +61,14 @@ class Presenter(object):
         fx, _, rmse = regression.pattern()
         price = fx(regression.future_x)
         filename = draw(regression, 'graph_dollar.png')
-        print self.day, price, rmse, filename
-        self.tweet(('Estimación Dollar Blue para el %s: AR$ %.2f '
-                    '(RMSE: AR$ %.2f)') %
-                   (self.day.strftime('%d-%m-%Y'), price, int(rmse)), filename)
+        try:
+            rmse = int(rmse)
+            print self.day, price, rmse, filename
+            self.tweet(('Estimación Dollar Blue para el %s: AR$ %.2f '
+                        '(RMSE: AR$ %.2f)') %
+                       (self.day.strftime('%d-%m-%Y'), price, rmse), filename)
+        except ValueError:
+            pass
 
     @twython
     def soy_showcase(self):
@@ -103,10 +107,13 @@ class Presenter(object):
         pearson = regression.pearson_correlation()
         m_dt = max(dt)
         m_dt = int_to_date(m_dt) if isinstance(m_dt, int) else m_dt
-        self.tweet(('Correlación Soja Chicago con pto. San Martín hasta el'
-                    ' %s: AR$ %.f (RMSE: AR$ %.f, Pearson: %.2f%%)') %
-                   (m_dt.strftime('%d-%m-%Y'), price, rmse, pearson),
-                   filename)
+        try:
+            self.tweet(('Correlación Soja Chicago con pto. San Martín hasta el'
+                        ' %s: AR$ %.f (RMSE: AR$ %.f, Pearson: %.2f%%)') %
+                       (m_dt.strftime('%d-%m-%Y'), price, rmse, pearson),
+                       filename)
+        except AttributeError:
+            pass
         self.tweet('El código puede ser descargado desde https://github.com/limiear/soyprice.', [])
 
     def demonstrate(self):
@@ -114,8 +121,7 @@ class Presenter(object):
         self.soy_showcase()
 
 
-dt = datetime.now() + timedelta(minutes=2)
-@app.run_every("day", dt.strftime("%H:%M"))
+@app.run_every("day", "08:00")
 def run():
     presenter = Presenter()
     presenter.demonstrate()
