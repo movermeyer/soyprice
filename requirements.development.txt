@@ -7,5 +7,5 @@ pep8==1.5.7
 flake8==2.2.5
 pyflakes==0.8.1
 isort==3.9.0
-pyzmq==4.3
-tornado==15.2.0
+pyzmq==15.2.0
+tornado==4.3
