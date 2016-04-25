@@ -4,3 +4,4 @@ from sqlalchemy.orm import validates
 
 
 db = SQLAlchemy(app)
+app.config['SESSION_SQLALCHEMY'] = db

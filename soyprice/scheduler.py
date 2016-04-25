@@ -4,6 +4,7 @@ from multiprocessing import Process
 import time
 import os
 import traceback
+from multiprocessing import Process
 
 
 def run_schedule():
@@ -22,10 +23,9 @@ def run_every(moment="day", hour="00:00"):
         getattr(schedule.every(), moment).at(hour).do(function)
 
         def wrapper(*args, **kwargs):
-            try:
-                function(*args, **kwargs)
-            except:
-                print(traceback.format_exc())
+            p = Process(target=function, args=args, kwargs=kwargs)
+            p.start()
+            p.join()
         return wrapper
     return real_decorator
 

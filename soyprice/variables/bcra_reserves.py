@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from variables.core import app, db, get_var, requests, beautifulsoup, Change
+from variables.core import (app, beautifulsoup, variable, update_prices,
+                            get_next_date, POST)
 from datetime import datetime, timedelta
 
 
-# dt = datetime.now() + timedelta(minutes=1)
-# @app.run_every("day", dt.strftime("%H:%M"))
-@app.run_every("day", "20:30")
+dt = datetime.now() + timedelta(minutes=1)
+@app.run_every("day", dt.strftime("%H:%M"))
+#@app.run_every("day", "20:30")
 def update_bcra_reserves():
     url = "http://www.bcra.gov.ar/Estadisticas/estprv010001.asp"
     bcra_vars = {
@@ -15,8 +16,8 @@ def update_bcra_reserves():
             u"reference": u"USD"
         }
     }
-    variables = {k: get_var(**v) for k, v in bcra_vars.items()}
-    variable = variables["reserve"]
+    variables = {k: variable(**v) for k, v in bcra_vars.items()}
+    var = variables["reserve"]
     first_date = datetime(1996, 03, 02)
     data = {
         'desde': first_date.strftime("%d/%m/%Y"),
@@ -28,7 +29,7 @@ def update_bcra_reserves():
         'fecha': 'Fecha_Serie',
         'campo': 'Res_Int_BCRA'
     }
-    page = beautifulsoup(requests.post(url, data=data).text)
+    page = beautifulsoup(POST(url, data))
     rows = page.select("#texto_columna_2 tr")
     data = map(lambda r: map(lambda c: c.text, r.select('td')), rows)
     data = data[1:]
@@ -36,12 +37,8 @@ def update_bcra_reserves():
                    (datetime.strptime(d[0], "%d/%m/%Y").date(),
                     float(d[1]) * 1000000),
                    data)
-    last_reg = variable.changes.order_by(Change.moment.desc()).first()
-    last_dt = last_reg.moment if last_reg else first_date.date()
-    reserves = filter(lambda r: r[0] > last_dt, reserves)
-    for d, v in reserves:
-        ch = Change(value=v, moment=d)
-        variable.changes.append(ch)
-        db.session.add(ch)
-    db.session.add(variable)
-    db.session.commit()
+    print reserves
+    begin = get_next_date(var, first_date)
+    print begin
+    update_prices(var, reserves, begin)
+    print "ready!"

@@ -60,6 +60,9 @@ test:
 run:
 	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/run.py 
 
+run_notebook:
+	$(SOURCE_ACTIVATE) $(PYTHON) ipython notebook --profile=nbserver soyprice/
+
 shell:
 	@ $(SOURCE_ACTIVATE) ipython
 	@ echo "[ shell        ] the system was loaded into an ipython shell"

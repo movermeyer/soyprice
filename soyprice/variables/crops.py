@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from variables.core import (app, db, get_var, get_page, requests,
-                            beautifulsoup, Change)
+from variables.core import (app, variable, get_page, requests,
+                            beautifulsoup, get_next_date, change,
+                            update_prices, GET)
 from datetime import datetime, date, timedelta
 from functools import partial
 from glob import glob
@@ -17,20 +18,18 @@ def load_bcr_dataset(filename, variables):
             moment = datetime.strptime(d.attrs['fchOper'], "%d/%m/%Y").date()
             try:
                 price = float(d.attrs['PrcFij'][2:])
-                ch = Change(value=price, moment=moment)
-                variables[product].changes.append(ch)
-                db.session.add(ch)
+                change(value=price,
+                       moment=moment.strftime('%Y-%m-%d'),
+                       variable_id=variables[product]['id'])
             except ValueError, e:
                 print e
-        list(map(db.session.add, variables.values()))
-        db.session.commit()
 
 
 is_float = lambda v: re.match("^\d+?\.\d+?$", v)
 
 
-# dt = datetime.now() + timedelta(minutes=1)
-# @app.run_every("day", dt.strftime("%H:%M"))
+#dt = datetime.now() + timedelta(minutes=1)
+#@app.run_every("day", dt.strftime("%H:%M"))
 @app.run_every("day", "10:55")
 def update_crops_bcr():
     bcr_variables = {
@@ -60,8 +59,8 @@ def update_crops_bcr():
             "reference": u"ARS/tn"
         }
     }
-    variables = {k: get_var(**v) for k, v in bcr_variables.items()}
-    is_empty = variables["Soja"].changes.count() == 0
+    variables = {k: variable(**v) for k, v in bcr_variables.items()}
+    is_empty = len(variables["Soja"]['changes']) == 0
     if is_empty:
         datasets = glob('data/bcr/*.prices.xml')
         load_data = partial(load_bcr_dataset, variables=variables)
@@ -73,15 +72,10 @@ def update_crops_bcr():
     dts = map(to_date, text[0][2:])
     for line in text[2:]:
         var = variables[line[0]]
-        last_reg = var.changes.order_by(Change.moment.desc()).first()
+        begin = get_next_date(var)
         prices = map(lambda v: float(v) if is_float(v) else None, line[2:])
         prices = zip(dts, prices)
-        for moment, price in filter(lambda r: r[1] and r[0] > last_reg.moment,
-                                    prices):
-            ch = Change(value=price, moment=moment)
-            db.session.add(ch)
-            var.changes.append(ch)
-        db.session.add(var)
+        update_prices(var, prices, begin)
 
 
 def get_afascl_prices(dt, variables):
@@ -89,7 +83,7 @@ def get_afascl_prices(dt, variables):
         # 0: mon ... 4:fri 5:sat 6: sun
         print "Detected {:} as a weekend day.".format(str(dt))
         return {}
-    if dt >= date(2014, 12, 1):
+    if dt.date() >= date(2014, 12, 1):
         url = "http://afascl.coop/afadiario/home/diario_xml.php"
         dt_str = dt.strftime("%d/%m/%Y")
         page = beautifulsoup(requests.post(url, data={"fecha": dt_str}).text)
@@ -113,7 +107,7 @@ def get_afascl_prices(dt, variables):
     for reg in prices:
         detect = filter(lambda lv: lv[0] in reg[0].lower(), lower_variables)
         if detect and is_float(reg[2]):
-            results.append((detect[0][1], reg[2]))
+            results.append((detect[0][1]['id'], reg[2]))
     return dict(results)
 
 
@@ -146,21 +140,15 @@ def update_crops_afascl():
             "reference": u"ARS/tn"
         }
     }
-    variables = {k: get_var(**v) for k, v in afascl_variables.items()}
-    begin = date(2007, 10, 1)
-    last_reg = variables['Soja'].changes.order_by(Change.moment.desc()).first()
-    dt = last_reg.moment if last_reg else begin
+    variables = {k: variable(**v) for k, v in afascl_variables.items()}
     get_prices = partial(get_afascl_prices, variables=variables)
-    dt += timedelta(days=1)
-    while dt <= date.today():
-        for variable, price in get_prices(dt).items():
-            ch = Change(value=price, moment=dt)
-            db.session.add(ch)
-            variable.changes.append(ch)
-        db.session.commit()
+    dt = get_next_date(variables['Soja'], date(2007, 10, 1))
+    while dt.date() <= date.today():
+        for variable_id, price in get_prices(dt).items():
+            change(value=price,
+                   moment=dt.strftime('%Y-%m-%d'),
+                   variable_id=variable_id)
         dt += timedelta(days=1)
-    list(map(db.session.add, variables.values()))
-    db.session.commit()
 
 
 @app.run_every("day", "17:00")
@@ -172,7 +160,7 @@ def update_crops_chicago():
             "reference": u"USD/bushel"
         }
     }
-    variables = {k: get_var(**v) for k, v in chicago_variables.items()}
+    variables = {k: variable(**v) for k, v in chicago_variables.items()}
     url = "http://api.ieconomics.com/ie5/?s=s%201:com&span=1y&_="
     data = get_page(url).select('p')[0].text
     data = json.loads(data)[0]
@@ -181,12 +169,6 @@ def update_crops_chicago():
                 (datetime.strptime(r['x_dt'], "%Y-%m-%dT%H:%M:%S.%fZ").date(),
                  float(r['close'])))
     prices = map(to_tuple, data)
-    variable = variables[u"soybean"]
-    last_dt = variable.changes.order_by(Change.moment.desc()).first()
-    last_dt = last_dt.moment if last_dt else prices[0][0] - timedelta(days=32)
-    new_prices = filter(lambda r: r[0] > last_dt, prices)
-    for dt, price in new_prices:
-        ch = Change(value=price, moment=dt)
-        db.session.add(ch)
-        variable.changes.append(ch)
-    db.session.commit()
+    for k, var in variables.items():
+        begin = get_next_date(var)
+        update_prices(var, prices, begin)
