@@ -61,7 +61,7 @@ run:
 	$(SOURCE_ACTIVATE) $(PYTHON) soyprice/run.py 
 
 run_notebook:
-	$(SOURCE_ACTIVATE) ipython notebook --ip='*' --profile=nbserver soyprice/ 
+	$(SOURCE_ACTIVATE) ipython notebook --ip='*' --profile=nbserver soyprice/notes/ 
 
 shell:
 	@ $(SOURCE_ACTIVATE) ipython
