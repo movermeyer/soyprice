@@ -3,12 +3,13 @@ from threading import Thread
 from multiprocessing import Process
 import time
 import os
-import traceback
-from multiprocessing import Process
 
 
 def run_schedule():
-    import variables
+    from variables.dollar import *
+    from variables.crops import *
+    from variables.petroleum import *
+    from variables.bcra_reserves import *
     import bots
     while 1:
         schedule.run_pending()
@@ -25,7 +26,6 @@ def run_every(moment="day", hour="00:00"):
         def wrapper(*args, **kwargs):
             p = Process(target=function, args=args, kwargs=kwargs)
             p.start()
-            p.join()
         return wrapper
     return real_decorator
 
